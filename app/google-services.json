@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "280816161476",
+    "firebase_url": "https://idoodle-3adf6.firebaseio.com",
+    "project_id": "idoodle-3adf6",
+    "storage_bucket": "idoodle-3adf6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280816161476:android:039c9f585b4a982e",
+        "android_client_info": {
+          "package_name": "hu.ait.keyshawn.idoodle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280816161476-p0mf9ng0rk05n1fs9t019pqmf5spuvt5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hu.ait.keyshawn.idoodle",
+            "certificate_hash": "1f91c9678f6e249356137b6adcb77aa7d7b86868"
+          }
+        },
+        {
+          "client_id": "280816161476-f59f1edc046gv95sqou9c1hspo5qhs3l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMaqmXn1WLEz84sYwvc1eo0n6jVRPN3BQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280816161476-f59f1edc046gv95sqou9c1hspo5qhs3l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:weightSum="6"
+    android:orientation="vertical"
+    tools:context="hu.ait.keyshawn.idoodle.GameActivity">
+
+    <hu.ait.keyshawn.idoodle.View.DrawingView
+        android:id="@+id/dvMainCanvas"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4" />
+
+    <ImageView
+        android:id="@+id/ivProjectedCanvas"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:src="#545454"
+        android:layout_weight="2"/>
+</LinearLayout>
