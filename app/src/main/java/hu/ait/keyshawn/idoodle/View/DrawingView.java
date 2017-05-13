@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.ByteArrayOutputStream;
 
 import hu.ait.keyshawn.idoodle.GameActivity;
+import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.user;
 
 /**
@@ -39,7 +40,7 @@ public class DrawingView extends View {
     public  int height;
     private Canvas mCanvas;
     private Path mPath;
-    private Paint fingerPaint;
+    private Paint bitPaint;
     private Paint mPaint;
     Context context;
     private Paint circlePaint;
@@ -51,18 +52,15 @@ public class DrawingView extends View {
     public DrawingView(Context c, AttributeSet attrib) {
         super(c, attrib);
 
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setDither(true);
-        mPaint.setColor(Color.GREEN);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setStrokeJoin(Paint.Join.ROUND);
-        mPaint.setStrokeCap(Paint.Cap.ROUND);
-        mPaint.setStrokeWidth(12);
+        initFingerPaint();
 
-        context=c;
+        initUtils(c);
+    }
+
+    private void initUtils(Context c) {
+        context= c;
         mPath = new Path();
-        fingerPaint = new Paint(Paint.DITHER_FLAG);
+        bitPaint = new Paint(Paint.DITHER_FLAG);
         circlePaint = new Paint();
         circlePath = new Path();
         circlePaint.setAntiAlias(true);
@@ -70,6 +68,17 @@ public class DrawingView extends View {
         circlePaint.setStyle(Paint.Style.STROKE);
         circlePaint.setStrokeJoin(Paint.Join.MITER);
         circlePaint.setStrokeWidth(4f);
+    }
+
+    private void initFingerPaint() {
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setDither(true);
+        mPaint.setColor(Color.BLACK);
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setStrokeJoin(Paint.Join.ROUND);
+        mPaint.setStrokeCap(Paint.Cap.ROUND);
+        mPaint.setStrokeWidth(12);
     }
 
     @Override
@@ -90,9 +99,26 @@ public class DrawingView extends View {
         onSizeChanged(width, height, width, height);
         invalidate();
 
-        clear();
+        clearImageInDB();
 
         setDrawingCacheEnabled(true);
+    }
+
+    public void clearImageInDB() {
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imgRef = mStorageRef.child(((GameActivity)getContext()).currentUser.getCurrentGameID());
+
+        imgRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("user", "successfull deletion");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("user", e.getLocalizedMessage());
+            }
+        });
     }
 
     public void saveDrawing()
@@ -120,34 +146,17 @@ public class DrawingView extends View {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                dbRef.child("games").child(currentUser.getCurrentGameID()).child("drawingUrl").setValue(downloadUrl);
+                dbRef.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_DrawingURL).setValue(downloadUrl);
             }
         });
 
-    }
-
-    public void clear() {
-        mStorageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference imgRef = mStorageRef.child(((GameActivity)getContext()).currentUser.getCurrentGameID());
-
-        imgRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d("user", "successfull deletion");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.d("user", e.getLocalizedMessage());
-            }
-        });
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        canvas.drawBitmap( mBitmap, 0, 0, fingerPaint);
+        canvas.drawBitmap( mBitmap, 0, 0, bitPaint);
         canvas.drawPath( mPath,  mPaint);
         canvas.drawPath( circlePath,  circlePaint);
     }

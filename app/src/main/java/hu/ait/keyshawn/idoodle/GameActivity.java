@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import hu.ait.keyshawn.idoodle.View.DrawingView;
+import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.game;
 import hu.ait.keyshawn.idoodle.data.user;
 
@@ -56,6 +57,30 @@ public class GameActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        initUI();
+
+        initDB();
+
+        initGameDrawingEventLister();
+    }
+
+    private void initDB() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        String gameKey = mDatabase.child(constants.db_Games).push().getKey();
+
+        game newGame = new game(gameKey, "Test Game" );
+        mDatabase.child(constants.db_Games).child(gameKey).setValue(newGame);
+
+        currentUser = ((MainApplication)getApplication()).getCurrentUser();
+        currentUser.setCurrentGameID(newGame.getUid());
+
+        if(currentUser != null) {
+            mDatabase.child(constants.db_Users).child(currentUser.getUid()).setValue(currentUser);
+            mDatabase.child(constants.db_Games).child(gameKey).child(constants.db_Games_Userlist).child(currentUser.getUid()).setValue(currentUser.getUsername());
+        }
+    }
+
+    private void initUI() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -78,26 +103,10 @@ public class GameActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        String gameKey = mDatabase.child("games").push().getKey();
-
-        game newGame = new game(gameKey, "Test Game" );
-        mDatabase.child("games").child(gameKey).setValue(newGame);
-
-        currentUser = ((MainApplication)getApplication()).getCurrentUser();
-        currentUser.setCurrentGameID(newGame.getUid());
-
-        if(currentUser != null) {
-            mDatabase.child("users").child(currentUser.getUid()).setValue(currentUser);
-            mDatabase.child("games").child(gameKey).child("userList").child(currentUser.getUid()).setValue(currentUser.getUsername());
-        }
-
-        initGameDrawingEventLister();
     }
 
     public void initGameDrawingEventLister() {
-        mDatabase.child("games").child(currentUser.getCurrentGameID()).child("drawingUrl").addValueEventListener(new ValueEventListener() {
+        mDatabase.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_DrawingURL).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String currentGameURL = dataSnapshot.getValue(String.class);

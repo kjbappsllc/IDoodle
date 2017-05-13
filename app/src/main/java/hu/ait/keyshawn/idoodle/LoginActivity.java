@@ -49,6 +49,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.user;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -74,6 +75,11 @@ public class LoginActivity extends AppCompatActivity{
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        setUpButtons();
+
+    }
+
+    private void setUpButtons() {
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -89,7 +95,6 @@ public class LoginActivity extends AppCompatActivity{
                 attemptRegister();
             }
         });
-
     }
 
 
@@ -159,7 +164,7 @@ public class LoginActivity extends AppCompatActivity{
                         setDisplayName(etusername.getText().toString()).build());
 
         user newUser = new user(etusername.getText().toString(), firebaseUser.getUid());
-        mDatabase.child("users").child(newUser.getUid()).setValue(newUser);
+        mDatabase.child(constants.db_Users).child(newUser.getUid()).setValue(newUser);
     }
 
     private void SignIn() {
@@ -184,7 +189,7 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     private void saveCurrentUser(@NonNull Task<AuthResult> task) {
-        mDatabase.child("users").child(task.getResult().getUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child(constants.db_Users).child(task.getResult().getUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user currentUser = dataSnapshot.getValue(user.class);
@@ -206,17 +211,14 @@ public class LoginActivity extends AppCompatActivity{
         etusername.setError(null);
         mPasswordView.setError(null);
 
-        // Store values at the time of the login attempt.
         String username = etusername.getText().toString();
         String password = mPasswordView.getText().toString();
 
-        // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             return false;
         }
 
-        // Check for a valid email address.
         if (TextUtils.isEmpty(username) || !isUserNameValid(username)) {
             if(!isUserNameValid(username)){
                 etusername.setError("Name cannot contain spaces");
