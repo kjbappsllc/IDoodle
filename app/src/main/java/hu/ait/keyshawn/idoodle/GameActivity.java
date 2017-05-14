@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -62,6 +63,8 @@ public class GameActivity extends AppCompatActivity
         initDB();
 
         initGameDrawingEventLister();
+
+        initGameUserListEventListener();
     }
 
     private void initDB() {
@@ -140,12 +143,56 @@ public class GameActivity extends AppCompatActivity
         });
     }
 
+    public void initGameUserListEventListener() {
+        mDatabase.child(constants.db_Games).
+                child(getCurrentUser().getCurrentGameID()).
+                child(constants.db_Games_Userlist).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                //Do stuff
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.hasChildren()){
+                    mDatabase.child(constants.db_Games).
+                            child(getCurrentUser().getCurrentGameID()).removeValue();
+                    Log.d("games", "USERLIST IS EMPTY");
+                }
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            mDatabase.child(constants.db_Games).
+                    child(getCurrentUser().getCurrentGameID()).
+                    child(constants.db_Games_Userlist).
+                    child(getCurrentUser().getUid()).removeValue();
+
+            mDatabase.child(constants.db_Users).
+                    child(getCurrentUser().getUid()).
+                    child("currentGameID").setValue("");
+
             super.onBackPressed();
         }
     }
@@ -166,6 +213,8 @@ public class GameActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_leaveGame) {
+
+
             return true;
         }
 
