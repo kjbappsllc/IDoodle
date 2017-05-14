@@ -71,13 +71,17 @@ public class GameActivity extends AppCompatActivity
         game newGame = new game(gameKey, "Test Game" );
         mDatabase.child(constants.db_Games).child(gameKey).setValue(newGame);
 
-        currentUser = ((MainApplication)getApplication()).getCurrentUser();
-        currentUser.setCurrentGameID(newGame.getUid());
+        currentUser = getCurrentUser();
 
         if(currentUser != null) {
+            currentUser.setCurrentGameID(newGame.getUid());
             mDatabase.child(constants.db_Users).child(currentUser.getUid()).setValue(currentUser);
             mDatabase.child(constants.db_Games).child(gameKey).child(constants.db_Games_Userlist).child(currentUser.getUid()).setValue(currentUser.getUsername());
         }
+    }
+
+    private user getCurrentUser() {
+        return ((MainApplication)getApplication()).getCurrentUser();
     }
 
     private void initUI() {

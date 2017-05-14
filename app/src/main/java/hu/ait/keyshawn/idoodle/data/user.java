@@ -8,11 +8,13 @@ public class user {
     private String username;
     private int gamesPlayed;
     private String uid;
+    private int totalPointsEarned;
     private String currentGameID;
 
     public user(String username, String uid){
         this.username = username;
         this.gamesPlayed = 0;
+        this.totalPointsEarned = 0;
         this.currentGameID = "";
         this.uid = uid;
     }
@@ -49,5 +51,13 @@ public class user {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public int getTotalPointsEarned() {
+        return totalPointsEarned;
+    }
+
+    public void setTotalPointsEarned(int totalPointsEarned) {
+        this.totalPointsEarned = totalPointsEarned;
     }
 }

@@ -1,6 +1,8 @@
 package hu.ait.keyshawn.idoodle.data;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mac on 5/12/17.
@@ -11,13 +13,16 @@ public class game {
     private String gameName;
     private String hostUserID;
     private String drawingUrl;
+    private int roundNumber;
     private String gameState;
-    private List<String> userList;
+    private Map<String, String> userList;
 
     public game(String uid, String gameName) {
         this.uid = uid;
         this.drawingUrl = "";
         this.gameName = gameName;
+        this.roundNumber = 0;
+        this.userList = new HashMap<>();
         this.gameState = saveGameState(gamestate.preGamePhase);
     }
 
@@ -64,12 +69,20 @@ public class game {
         this.hostUserID = hostUserID;
     }
 
-    public List<String> getUserList() {
+    public Map<String, String> getUserList() {
         return userList;
     }
 
-    public void setUserList(List<String> userList) {
+    public void setUserList(Map<String, String> userList) {
         this.userList = userList;
+    }
+
+    public int getRoundNumber() {
+        return roundNumber;
+    }
+
+    public void setRoundNumber(int roundNumber) {
+        this.roundNumber = roundNumber;
     }
 }
 
