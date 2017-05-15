@@ -16,8 +16,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -64,6 +66,7 @@ public class GameActivity extends AppCompatActivity
     public String currentDrawerID;
     public Button btnStart;
     public TextView tvWaiting;
+    Chronometer chronTimer;
     public String hostUserID;
     public TreeMap<String , Integer> gameUsers = new TreeMap<>();
     public List<String> gameUserIDS = new ArrayList<>();
@@ -116,6 +119,7 @@ public class GameActivity extends AppCompatActivity
 
         dvMain = (DrawingView) findViewById(R.id.dvMainCanvas);
         ivProjectedCanvas = (ImageView) findViewById(R.id.ivProjectedCanvas);
+        chronTimer = (Chronometer) findViewById(R.id.chronTimer);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -330,6 +334,10 @@ public class GameActivity extends AppCompatActivity
             getNewDrawer(newGs);
             btnStart.setVisibility(View.GONE);
             tvWaiting.setVisibility(View.GONE);
+            chronTimer.setVisibility(View.VISIBLE);
+        }
+        else {
+            Toast.makeText(this, "Need at least 2 Players to Start", Toast.LENGTH_SHORT).show();
         }
     }
 

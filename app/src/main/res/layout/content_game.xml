@@ -10,6 +10,24 @@
     android:orientation="vertical"
     tools:context="hu.ait.keyshawn.idoodle.GameActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="#9d9fff"
+        android:layout_height="wrap_content">
+
+        <Chronometer
+            android:id="@+id/chronTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:textColor="#ffffff"
+            android:layout_marginTop="40dp"
+            android:visibility="gone"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
+
     <hu.ait.keyshawn.idoodle.View.DrawingView
         android:id="@+id/dvMainCanvas"
         android:layout_width="match_parent"
