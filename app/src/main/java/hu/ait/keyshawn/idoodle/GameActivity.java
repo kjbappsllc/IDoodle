@@ -69,6 +69,8 @@ public class GameActivity extends AppCompatActivity
         initGameUserListEventListener();
 
         initGameStateEventListener();
+
+
     }
 
     private void initDB() {

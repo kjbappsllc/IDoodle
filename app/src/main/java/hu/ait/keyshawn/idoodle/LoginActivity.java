@@ -196,8 +196,8 @@ public class LoginActivity extends AppCompatActivity{
                 ((MainApplication)getApplication()).setCurrentUser(currentUser);
 
                 hideProgressDialog();
-                startActivity(new Intent(LoginActivity.this, GameActivity.class));
-
+                //startActivity(new Intent(LoginActivity.this, GameActivity.class));
+                startActivity(new Intent(LoginActivity.this, LobbyActivity.class));
             }
 
             @Override
