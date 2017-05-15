@@ -20,7 +20,7 @@ public class game {
         this.drawingUrl = "";
         this.currentDrawer = "";
         this.gameName = gameName;
-        this.roundNumber = 0;
+        this.roundNumber = 1;
         this.userList = new HashMap<>();
         this.hostUserID = "";
         this.gameState = saveGameState(gamestate.preGamePhase);
