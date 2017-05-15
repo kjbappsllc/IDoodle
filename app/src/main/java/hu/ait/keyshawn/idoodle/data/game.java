@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by mac on 5/12/17.
- */
 
 public class game {
     private String uid;
@@ -15,14 +12,17 @@ public class game {
     private String drawingUrl;
     private int roundNumber;
     private String gameState;
-    private Map<String, String> userList;
+    private String currentDrawer;
+    private Map userList;
 
     public game(String uid, String gameName) {
         this.uid = uid;
         this.drawingUrl = "";
+        this.currentDrawer = "";
         this.gameName = gameName;
         this.roundNumber = 0;
         this.userList = new HashMap<>();
+        this.hostUserID = "";
         this.gameState = saveGameState(gamestate.preGamePhase);
     }
 
@@ -69,11 +69,11 @@ public class game {
         this.hostUserID = hostUserID;
     }
 
-    public Map<String, String> getUserList() {
+    public Map getUserList() {
         return userList;
     }
 
-    public void setUserList(Map<String, String> userList) {
+    public void setUserList(Map userList) {
         this.userList = userList;
     }
 
@@ -83,6 +83,14 @@ public class game {
 
     public void setRoundNumber(int roundNumber) {
         this.roundNumber = roundNumber;
+    }
+
+    public String getCurrentDrawer() {
+        return currentDrawer;
+    }
+
+    public void setCurrentDrawer(String currentDrawer) {
+        this.currentDrawer = currentDrawer;
     }
 }
 

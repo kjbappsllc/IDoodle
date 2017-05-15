@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.android.gms.common.api.BatchResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -43,6 +44,7 @@ import java.util.UUID;
 import hu.ait.keyshawn.idoodle.View.DrawingView;
 import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.game;
+import hu.ait.keyshawn.idoodle.data.gamestate;
 import hu.ait.keyshawn.idoodle.data.user;
 
 public class GameActivity extends AppCompatActivity
@@ -65,6 +67,8 @@ public class GameActivity extends AppCompatActivity
         initGameDrawingEventLister();
 
         initGameUserListEventListener();
+
+        initGameStateEventListener();
     }
 
     private void initDB() {
@@ -79,7 +83,8 @@ public class GameActivity extends AppCompatActivity
         if(currentUser != null) {
             currentUser.setCurrentGameID(newGame.getUid());
             mDatabase.child(constants.db_Users).child(currentUser.getUid()).setValue(currentUser);
-            mDatabase.child(constants.db_Games).child(gameKey).child(constants.db_Games_Userlist).child(currentUser.getUid()).setValue(currentUser.getUsername());
+            mDatabase.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_hostID).setValue(currentUser.getUid());
+            mDatabase.child(constants.db_Games).child(gameKey).child(constants.db_Games_Userlist).child(currentUser.getUid()).setValue(0);
         }
     }
 
@@ -178,21 +183,54 @@ public class GameActivity extends AppCompatActivity
         });
     }
 
+    public void initGameStateEventListener() {
+        mDatabase.child(constants.db_Games)
+                .child(getCurrentUser().getCurrentGameID())
+                .child(constants.db_Games_gameState).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String gameState = dataSnapshot.getValue(String.class);
+
+                if(!TextUtils.isEmpty(gameState)) {
+                    gamestate gs = gamestate.valueOf(gameState);
+
+                    switch (gs) {
+                        case preGamePhase:
+                            Log.d("gs", "PREGAME");
+                            break;
+
+                        case drawingPhase:
+                            Log.d("gs", "DRAWING");
+                            break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void leaveGame() {
+        mDatabase.child(constants.db_Games).
+                child(getCurrentUser().getCurrentGameID()).
+                child(constants.db_Games_Userlist).
+                child(getCurrentUser().getUid()).removeValue();
+
+        mDatabase.child(constants.db_Users).
+                child(getCurrentUser().getUid()).
+                child("currentGameID").setValue("");
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            mDatabase.child(constants.db_Games).
-                    child(getCurrentUser().getCurrentGameID()).
-                    child(constants.db_Games_Userlist).
-                    child(getCurrentUser().getUid()).removeValue();
-
-            mDatabase.child(constants.db_Users).
-                    child(getCurrentUser().getUid()).
-                    child("currentGameID").setValue("");
-
+            leaveGame();
             super.onBackPressed();
         }
     }
@@ -212,9 +250,9 @@ public class GameActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_leaveGame) {
-
-
+        if (id == R.id.action_startGame) {
+            String newGs = gamestate.GameStateToString(gamestate.drawingPhase);
+            mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_gameState).setValue(newGs);
             return true;
         }
 

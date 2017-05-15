@@ -13,4 +13,8 @@ public interface constants {
 
     public static final String db_Games_DrawingURL = "drawingUrl";
 
+    public static final String db_Games_hostID = "hostUserID";
+
+    public static final String db_Games_gameState = "gameState";
+
 }
