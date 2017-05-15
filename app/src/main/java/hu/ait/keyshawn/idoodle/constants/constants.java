@@ -17,4 +17,8 @@ public interface constants {
 
     public static final String db_Games_gameState = "gameState";
 
+    public static final String db_Games_roundNumber = "roundNumber";
+
+    public static final String db_Games_currentDrawer = "currentDrawer";
+
 }
