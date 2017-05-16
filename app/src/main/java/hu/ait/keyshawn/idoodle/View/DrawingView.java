@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.ByteArrayOutputStream;
 
 import hu.ait.keyshawn.idoodle.GameActivity;
+import hu.ait.keyshawn.idoodle.MainApplication;
 import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.user;
 
@@ -106,7 +107,7 @@ public class DrawingView extends View {
 
     public void clearImageInDB() {
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference imgRef = mStorageRef.child(((GameActivity)getContext()).currentUser.getCurrentGameID());
+        StorageReference imgRef = mStorageRef.child(((GameActivity)getContext()).getCurrentUser().getCurrentGameID());
 
         imgRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
@@ -127,7 +128,7 @@ public class DrawingView extends View {
         mStorageRef = FirebaseStorage.getInstance().getReference();
         dbRef = FirebaseDatabase.getInstance().getReference();
 
-        final user currentUser = ((GameActivity)getContext()).currentUser;
+        final user currentUser = ((GameActivity)getContext()).getCurrentUser();
 
         StorageReference imagesRef = mStorageRef.child(currentUser.getCurrentGameID());
 

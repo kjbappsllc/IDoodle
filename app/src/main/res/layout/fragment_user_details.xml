@@ -1,38 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:orientation="vertical"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:gravity="center_horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:background="#9395ff"
+    android:orientation="vertical"
+    android:paddingTop="25dp">
 
     <TextView
         android:id="@+id/tvUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Username goes here"
+        android:paddingBottom="15dp"
         android:paddingTop="10dp"
-        android:paddingBottom="15dp"/>
+        android:textColor="#FFF"
+        android:textStyle="bold|italic"
+        android:text="Username goes here"
+        android:textSize="35sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Games Played"/>
+        android:textSize="22sp"
+        android:textColor="#FFF"
+        android:layout_marginTop="20dp"
+        android:text="Games Played" />
 
     <TextView
         android:id="@+id/tvGamesPlayed"
+        android:textColor="#FFF"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"/>
+        android:textSize="20sp"
+        android:text="0" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Total Points"/>
+        android:textSize="22sp"
+        android:textColor="#FFF"
+        android:layout_marginTop="20dp"
+        android:text="Total Points" />
 
     <TextView
         android:id="@+id/tvTotalPoints"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0"/>
+        android:textSize="20sp"
+        android:textColor="#FFF"
+        android:text="0" />
 
 </LinearLayout>

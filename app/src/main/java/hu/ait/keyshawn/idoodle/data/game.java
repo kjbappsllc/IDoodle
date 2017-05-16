@@ -3,6 +3,7 @@ package hu.ait.keyshawn.idoodle.data;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public class game {
@@ -13,7 +14,7 @@ public class game {
     private int roundNumber;
     private String gameState;
     private String currentDrawer;
-    private Map userList;
+    private HashMap<String, Integer> userList;
 
     public game(String uid, String gameName) {
         this.uid = uid;
@@ -69,11 +70,11 @@ public class game {
         this.hostUserID = hostUserID;
     }
 
-    public Map getUserList() {
+    public HashMap<String, Integer> getUserList() {
         return userList;
     }
 
-    public void setUserList(Map userList) {
+    public void setUserList(HashMap<String, Integer> userList) {
         this.userList = userList;
     }
 

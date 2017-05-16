@@ -21,6 +21,9 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-
     <string name="Username_to_Email"> %1$s@doodle.com </string>
+
+    <!-- Strings related to the Lobby -->
+    <string name="RoundNumber">Round: %1$d</string>
+    <string name="UserNumber">Users: %1$d</string>
 </resources>

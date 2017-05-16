@@ -1,6 +1,7 @@
 package hu.ait.keyshawn.idoodle.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -26,15 +27,13 @@ import hu.ait.keyshawn.idoodle.data.game;
 public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
 
     private List<game> gameList;
+    private List<String> gameIDs;
     private Context context;
 
     public LobbyAdapter(Context context){
         this.context = context;
-        gameList = new ArrayList<game>();
-
-        gameList.add(new game("123","game #1"));
-        gameList.add(new game("567","game #3"));
-
+        gameIDs = new ArrayList<>();
+        gameList = new ArrayList<>();
     }
 
     @Override
@@ -45,18 +44,20 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.tvGameName.setText(gameList.get(position).getGameName());
-        holder.tvRoundNum.setText(Integer.toString(gameList.get(position).getRoundNumber()));
+        holder.tvRound.setText(context.getString(R.string.RoundNumber, gameList.get(position).getRoundNumber()));
         if (gameList.get(position).getUserList() == null){
             System.out.println("user list is null");
         }
-        holder.tvNumOfUsers.setText(Integer.toString(gameList.get(position).getUserList().size()));
+        else {
+            holder.tvUsers.setText(context.getString(R.string.UserNumber, gameList.get(position).getUserList().size()));
+        }
+
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((LobbyActivity)context).showGameActivity
-                        (gameList.get(holder.getAdapterPosition()).getGameName());
+                ((LobbyActivity)context).initJoinGameDB(gameIDs.get(position), holder.tvGameName.getText().toString());
             }
         });
     }
@@ -66,29 +67,47 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
         return gameList.size();
     }
 
-    public void addGame(String gameName){
-        //add uid and gamename parameters to new game()
-        gameList.add(0, new game());
+    public void addGame(game newGame){
+        gameList.add(0, newGame);
+        gameIDs.add(0, newGame.getUid());
         notifyItemInserted(0);
 
+    }
+
+    public void removeGame(String id){
+
+        int index = gameIDs.indexOf(id);
+
+        if(index != -1) {
+            gameList.remove(index);
+            gameIDs.remove(index);
+            notifyItemRemoved(index);
+        }
+
+    }
+
+    public void updateGame(String id, game updated) {
+        int index = gameIDs.indexOf(id);
+
+        if(index != -1) {
+            gameList.set(index, updated);
+            gameIDs.set(index, id);
+            notifyItemChanged(index);
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView tvGameName;
         private TextView tvRound;
-        private TextView tvRoundNum;
         private TextView tvUsers;
-        private TextView tvNumOfUsers;
         private CardView cardView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             tvGameName = (TextView)itemView.findViewById(R.id.tvGameName);
             tvRound = (TextView) itemView.findViewById(R.id.tvRound);
-            tvRoundNum = (TextView) itemView.findViewById(R.id.tvRoundNum);
             tvUsers = (TextView) itemView.findViewById(R.id.tvUsers);
-            tvNumOfUsers= (TextView) itemView.findViewById(R.id.tvNumOfUsers);
             cardView = (CardView) itemView.findViewById(R.id.card_view);
         }
     }

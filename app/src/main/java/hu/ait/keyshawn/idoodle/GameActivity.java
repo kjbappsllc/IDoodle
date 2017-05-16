@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import hu.ait.keyshawn.idoodle.View.DrawingView;
 import hu.ait.keyshawn.idoodle.constants.constants;
@@ -62,13 +64,13 @@ public class GameActivity extends AppCompatActivity
     public ImageView ivProjectedCanvas;
     public FloatingActionButton fab;
     public DatabaseReference mDatabase;
-    public user currentUser;
     public String currentDrawerID;
     public Button btnStart;
     public TextView tvWaiting;
+    public EditText etGuess;
     Chronometer chronTimer;
     public String hostUserID;
-    public TreeMap<String , Integer> gameUsers = new TreeMap<>();
+    public HashMap<String , Integer> gameUsers = new HashMap<>();
     public List<String> gameUserIDS = new ArrayList<>();
 
     @Override
@@ -76,9 +78,13 @@ public class GameActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        initUI();
+        if(getIntent().hasExtra(LobbyActivity.GAME_NAME)){
+            setTitle(getIntent().getStringExtra(LobbyActivity.GAME_NAME));
+        }
 
         initDB();
+
+        initUI();
 
         initGameDrawingEventLister();
 
@@ -86,31 +92,17 @@ public class GameActivity extends AppCompatActivity
 
         initGameHostIDEventListener();
 
-        initGameStateEventListener();
-
         initCurrentDrawerEventListener();
+
+        initGameStateEventListener();
 
     }
 
     private void initDB() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        String gameKey = mDatabase.child(constants.db_Games).push().getKey();
-
-        game newGame = new game(gameKey, "Test Game" );
-        setTitle(newGame.getGameName());
-        mDatabase.child(constants.db_Games).child(gameKey).setValue(newGame);
-
-        currentUser = getCurrentUser();
-
-        if(currentUser != null) {
-            currentUser.setCurrentGameID(newGame.getUid());
-            mDatabase.child(constants.db_Users).child(currentUser.getUid()).setValue(currentUser);
-            mDatabase.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_hostID).setValue(currentUser.getUid());
-            mDatabase.child(constants.db_Games).child(gameKey).child(constants.db_Games_Userlist).child(currentUser.getUid()).setValue(0);
-        }
     }
 
-    private user getCurrentUser() {
+    public user getCurrentUser() {
         return ((MainApplication)getApplication()).getCurrentUser();
     }
 
@@ -121,6 +113,7 @@ public class GameActivity extends AppCompatActivity
         dvMain = (DrawingView) findViewById(R.id.dvMainCanvas);
         ivProjectedCanvas = (ImageView) findViewById(R.id.ivProjectedCanvas);
         chronTimer = (Chronometer) findViewById(R.id.chronTimer);
+        etGuess = (EditText) findViewById(R.id.etGuess);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -151,7 +144,7 @@ public class GameActivity extends AppCompatActivity
     }
 
     public void initGameHostIDEventListener() {
-        mDatabase.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_hostID).addValueEventListener(new ValueEventListener() {
+        mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_hostID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 hostUserID = dataSnapshot.getValue(String.class);
@@ -165,7 +158,7 @@ public class GameActivity extends AppCompatActivity
     }
 
     public void initGameDrawingEventLister() {
-        mDatabase.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_DrawingURL).addValueEventListener(new ValueEventListener() {
+        mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_DrawingURL).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String currentGameURL = dataSnapshot.getValue(String.class);
@@ -217,11 +210,10 @@ public class GameActivity extends AppCompatActivity
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                if(!dataSnapshot.hasChildren()){
-                    mDatabase.child(constants.db_Games).
-                            child(getCurrentUser().getCurrentGameID()).removeValue();
-                    Log.d("games", "USERLIST IS EMPTY");
-                }
+                int index = gameUserIDS.indexOf(dataSnapshot.getKey());
+                gameUserIDS.remove(index);
+                gameUsers.remove(index);
+                checkUsers();
             }
 
             @Override
@@ -275,11 +267,15 @@ public class GameActivity extends AppCompatActivity
                             break;
 
                         case drawingPhase:
+                            btnStart.setVisibility(View.GONE);
+                            tvWaiting.setVisibility(View.GONE);
+                            chronTimer.setVisibility(View.VISIBLE);
 
                             if(currentDrawerID.equals(getCurrentUser().getUid())){
                                 ivProjectedCanvas.setVisibility(View.GONE);
                                 dvMain.setVisibility(View.VISIBLE);
                                 fab.setVisibility(View.VISIBLE);
+                                etGuess.setVisibility(View.INVISIBLE);
                             } else {
                                 ivProjectedCanvas.setVisibility(View.VISIBLE);
                                 dvMain.setVisibility(View.GONE);
@@ -300,8 +296,16 @@ public class GameActivity extends AppCompatActivity
     }
 
     public void checkUsers() {
-        for(String key: gameUsers.keySet()){
-            Log.d("gameUsers", (key + " - " + gameUsers.get(key)));
+
+        if(gameUserIDS.isEmpty()){
+            mDatabase.child(constants.db_Games).
+                    child(getCurrentUser().getCurrentGameID()).removeValue();
+            Log.d("games", "USERLIST IS EMPTY");
+
+        } else {
+            for(String key: gameUsers.keySet()){
+                Log.d("gameUsers", (key + " - " + gameUsers.get(key)));
+            }
         }
 
     }
@@ -350,7 +354,7 @@ public class GameActivity extends AppCompatActivity
 
                 int index = roundNumber % gameUsers.size();
 
-                String nextUserID = gameUserIDS.get(index);
+                String nextUserID = gameUserIDS.get(index-1);
 
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_currentDrawer).setValue(nextUserID);
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_gameState).setValue(newGs);

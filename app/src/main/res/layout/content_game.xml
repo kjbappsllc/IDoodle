@@ -70,6 +70,7 @@
             android:layout_alignParentBottom="true">
 
             <EditText
+                android:id="@+id/etGuess"
                 android:layout_width="match_parent"
                 android:maxLines="1"
                 android:layout_height="match_parent"

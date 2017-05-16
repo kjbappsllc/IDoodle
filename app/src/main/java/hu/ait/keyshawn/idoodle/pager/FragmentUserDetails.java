@@ -48,6 +48,6 @@ public class FragmentUserDetails extends Fragment{
     }
 
     private user getCurrentUser() {
-        return ((MainApplication)((LobbyActivity)getActivity()).getApplication()).getCurrentUser();
+        return ((MainApplication)(getActivity()).getApplication()).getCurrentUser();
     }
 }
