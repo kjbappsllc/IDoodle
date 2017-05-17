@@ -28,7 +28,7 @@ import java.io.ByteArrayOutputStream;
 import hu.ait.keyshawn.idoodle.GameActivity;
 import hu.ait.keyshawn.idoodle.MainApplication;
 import hu.ait.keyshawn.idoodle.constants.constants;
-import hu.ait.keyshawn.idoodle.data.user;
+import hu.ait.keyshawn.idoodle.data.User;
 
 /**
  * Created by mac on 5/12/17.
@@ -128,7 +128,7 @@ public class DrawingView extends View {
         mStorageRef = FirebaseStorage.getInstance().getReference();
         dbRef = FirebaseDatabase.getInstance().getReference();
 
-        final user currentUser = ((GameActivity)getContext()).getCurrentUser();
+        final User currentUser = ((GameActivity)getContext()).getCurrentUser();
 
         StorageReference imagesRef = mStorageRef.child(currentUser.getCurrentGameID());
 

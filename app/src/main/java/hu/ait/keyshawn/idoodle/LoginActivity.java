@@ -50,7 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hu.ait.keyshawn.idoodle.constants.constants;
-import hu.ait.keyshawn.idoodle.data.user;
+import hu.ait.keyshawn.idoodle.data.User;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -163,7 +163,7 @@ public class LoginActivity extends AppCompatActivity{
                 new UserProfileChangeRequest.Builder().
                         setDisplayName(etusername.getText().toString()).build());
 
-        user newUser = new user(etusername.getText().toString(), firebaseUser.getUid());
+        User newUser = new User(etusername.getText().toString(), firebaseUser.getUid());
         mDatabase.child(constants.db_Users).child(newUser.getUid()).setValue(newUser);
     }
 
@@ -192,7 +192,7 @@ public class LoginActivity extends AppCompatActivity{
         mDatabase.child(constants.db_Users).child(task.getResult().getUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                user currentUser = dataSnapshot.getValue(user.class);
+                User currentUser = dataSnapshot.getValue(User.class);
                 ((MainApplication)getApplication()).setCurrentUser(currentUser);
 
                 hideProgressDialog();

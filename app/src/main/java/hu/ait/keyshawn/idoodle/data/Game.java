@@ -1,12 +1,9 @@
 package hu.ait.keyshawn.idoodle.data;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 
-public class game {
+public class Game {
     private String uid;
     private String gameName;
     private String hostUserID;
@@ -16,7 +13,7 @@ public class game {
     private String currentDrawer;
     private HashMap<String, String> userList;
 
-    public game(String uid, String gameName) {
+    public Game(String uid, String gameName) {
         this.uid = uid;
         this.drawingUrl = "";
         this.currentDrawer = "";
@@ -24,18 +21,18 @@ public class game {
         this.roundNumber = 1;
         this.userList = new HashMap<>();
         this.hostUserID = "";
-        this.gameState = saveGameState(gamestate.preGamePhase);
+        this.gameState = saveGameState(Gamestate.preGamePhase);
     }
 
-    public game() {}
+    public Game() {}
 
-    public String saveGameState(gamestate val) {
+    public String saveGameState(Gamestate val) {
         this.gameState = val.toString();
         return val.toString();
     }
 
-    public gamestate getGameState() {
-        return gamestate.valueOf(gameState);
+    public Gamestate getGameState() {
+        return Gamestate.valueOf(gameState);
     }
 
     public String getDrawingUrl() {

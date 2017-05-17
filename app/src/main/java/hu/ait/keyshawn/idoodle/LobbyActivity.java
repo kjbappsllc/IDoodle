@@ -7,7 +7,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -20,13 +19,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.kekstudio.dachshundtablayout.DachshundTabLayout;
 import com.kekstudio.dachshundtablayout.indicators.LineMoveIndicator;
 
-import org.w3c.dom.Text;
-
 import hu.ait.keyshawn.idoodle.adapter.LobbyAdapter;
 import hu.ait.keyshawn.idoodle.constants.constants;
-import hu.ait.keyshawn.idoodle.data.game;
-import hu.ait.keyshawn.idoodle.data.user;
-import hu.ait.keyshawn.idoodle.pager.FragmentLobbies;
+import hu.ait.keyshawn.idoodle.data.Game;
+import hu.ait.keyshawn.idoodle.data.User;
 import hu.ait.keyshawn.idoodle.pager.FragmentPager;
 
 /**
@@ -63,7 +59,7 @@ public class LobbyActivity extends AppCompatActivity {
 
     }
 
-    private user getCurrentUser() {
+    private User getCurrentUser() {
         return ((MainApplication)getApplication()).getCurrentUser();
     }
 
@@ -126,10 +122,10 @@ public class LobbyActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         String gameKey = mDatabase.child(constants.db_Games).push().getKey();
 
-        game newGame = new game(gameKey, gameName);
+        Game newGame = new Game(gameKey, gameName);
         mDatabase.child(constants.db_Games).child(gameKey).setValue(newGame);
 
-        user currentUser = getCurrentUser();
+        User currentUser = getCurrentUser();
 
         if(currentUser != null) {
             currentUser.setCurrentGameID(newGame.getUid());
@@ -149,7 +145,7 @@ public class LobbyActivity extends AppCompatActivity {
         Resources res = getResources();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        user currentUser = getCurrentUser();
+        User currentUser = getCurrentUser();
 
         if(currentUser != null) {
             currentUser.setCurrentGameID(gameID);

@@ -1,9 +1,7 @@
 package hu.ait.keyshawn.idoodle.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,20 +9,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import hu.ait.keyshawn.idoodle.GameActivity;
 import hu.ait.keyshawn.idoodle.R;
-import hu.ait.keyshawn.idoodle.constants.constants;
-import hu.ait.keyshawn.idoodle.data.game;
-import hu.ait.keyshawn.idoodle.data.user;
 
 /**
  * Created by mac on 5/16/17.

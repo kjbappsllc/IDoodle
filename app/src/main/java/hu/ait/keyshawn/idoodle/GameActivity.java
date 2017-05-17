@@ -3,7 +3,6 @@ package hu.ait.keyshawn.idoodle;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +16,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -30,12 +28,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.google.android.gms.common.api.BatchResult;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,25 +35,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import hu.ait.keyshawn.idoodle.View.DrawingView;
 import hu.ait.keyshawn.idoodle.adapter.GameUsersAdapter;
-import hu.ait.keyshawn.idoodle.adapter.LobbyAdapter;
 import hu.ait.keyshawn.idoodle.constants.constants;
-import hu.ait.keyshawn.idoodle.data.game;
-import hu.ait.keyshawn.idoodle.data.gamestate;
-import hu.ait.keyshawn.idoodle.data.user;
+import hu.ait.keyshawn.idoodle.data.Gamestate;
+import hu.ait.keyshawn.idoodle.data.User;
 
 public class GameActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -110,7 +92,7 @@ public class GameActivity extends AppCompatActivity
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
-    public user getCurrentUser() {
+    public User getCurrentUser() {
         return ((MainApplication)getApplication()).getCurrentUser();
     }
 
@@ -294,7 +276,7 @@ public class GameActivity extends AppCompatActivity
                 String gameState = dataSnapshot.getValue(String.class);
 
                 if(!TextUtils.isEmpty(gameState)) {
-                    gamestate gs = gamestate.valueOf(gameState);
+                    Gamestate gs = Gamestate.valueOf(gameState);
 
                     switch (gs) {
                         case preGamePhase:
@@ -383,7 +365,7 @@ public class GameActivity extends AppCompatActivity
     }
 
     private void startGame() {
-        String newGs = gamestate.GameStateToString(gamestate.drawingPhase);
+        String newGs = Gamestate.GameStateToString(Gamestate.drawingPhase);
 
         if(gameUsers.size() >= 1){
             getNewDrawer(newGs);

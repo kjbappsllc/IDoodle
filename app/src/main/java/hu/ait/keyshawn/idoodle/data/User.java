@@ -4,14 +4,14 @@ package hu.ait.keyshawn.idoodle.data;
  * Created by mac on 5/13/17.
  */
 
-public class user {
+public class User {
     private String username;
     private int gamesPlayed;
     private String uid;
     private int totalPointsEarned;
     private String currentGameID;
 
-    public user(String username, String uid){
+    public User(String username, String uid){
         this.username = username;
         this.gamesPlayed = 0;
         this.totalPointsEarned = 0;
@@ -19,7 +19,7 @@ public class user {
         this.uid = uid;
     }
 
-    public user() {}
+    public User() {}
 
     public int getGamesPlayed() {
         return gamesPlayed;

@@ -19,7 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import hu.ait.keyshawn.idoodle.R;
 import hu.ait.keyshawn.idoodle.adapter.LobbyAdapter;
 import hu.ait.keyshawn.idoodle.constants.constants;
-import hu.ait.keyshawn.idoodle.data.game;
+import hu.ait.keyshawn.idoodle.data.Game;
 
 /**
  * Created by vickievictor on 5/15/17.
@@ -56,20 +56,20 @@ public class FragmentLobbies extends Fragment {
         gamesRef.child(constants.db_Games).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                game newGame = dataSnapshot.getValue(game.class);
+                Game newGame = dataSnapshot.getValue(Game.class);
                 lobbyAdapter.addGame(newGame);
                 lobbyRecycler.scrollToPosition(0);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                game updatedGame = dataSnapshot.getValue(game.class);
+                Game updatedGame = dataSnapshot.getValue(Game.class);
                 lobbyAdapter.updateGame(updatedGame.getUid(), updatedGame);
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                game removedGame = dataSnapshot.getValue(game.class);
+                Game removedGame = dataSnapshot.getValue(Game.class);
                 lobbyAdapter.removeGame(removedGame.getUid());
             }
 

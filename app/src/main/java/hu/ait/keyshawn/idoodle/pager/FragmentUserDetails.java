@@ -11,7 +11,7 @@ import android.widget.TextView;
 import hu.ait.keyshawn.idoodle.LobbyActivity;
 import hu.ait.keyshawn.idoodle.MainApplication;
 import hu.ait.keyshawn.idoodle.R;
-import hu.ait.keyshawn.idoodle.data.user;
+import hu.ait.keyshawn.idoodle.data.User;
 
 /**
  * Created by vickievictor on 5/15/17.
@@ -47,7 +47,7 @@ public class FragmentUserDetails extends Fragment{
         return rootView;
     }
 
-    private user getCurrentUser() {
+    private User getCurrentUser() {
         return ((MainApplication)(getActivity()).getApplication()).getCurrentUser();
     }
 }

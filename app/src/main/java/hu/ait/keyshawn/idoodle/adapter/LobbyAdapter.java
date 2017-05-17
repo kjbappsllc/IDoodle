@@ -1,16 +1,11 @@
 package hu.ait.keyshawn.idoodle.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,7 +13,7 @@ import java.util.List;
 
 import hu.ait.keyshawn.idoodle.LobbyActivity;
 import hu.ait.keyshawn.idoodle.R;
-import hu.ait.keyshawn.idoodle.data.game;
+import hu.ait.keyshawn.idoodle.data.Game;
 
 /**
  * Created by vickievictor on 5/15/17.
@@ -26,7 +21,7 @@ import hu.ait.keyshawn.idoodle.data.game;
 
 public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
 
-    private List<game> gameList;
+    private List<Game> gameList;
     private List<String> gameIDs;
     private Context context;
 
@@ -67,7 +62,7 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
         return gameList.size();
     }
 
-    public void addGame(game newGame){
+    public void addGame(Game newGame){
         gameList.add(0, newGame);
         gameIDs.add(0, newGame.getUid());
         notifyItemInserted(0);
@@ -86,7 +81,7 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
 
     }
 
-    public void updateGame(String id, game updated) {
+    public void updateGame(String id, Game updated) {
         int index = gameIDs.indexOf(id);
 
         if(index != -1) {
