@@ -235,9 +235,13 @@ public class GameActivity extends AppCompatActivity
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                int index = gameUserIDS.indexOf(dataSnapshot.getKey());
+                String uID = dataSnapshot.getKey();
+                String userInfo = dataSnapshot.getValue(String.class);
+
+                int index = gameUserIDS.indexOf(uID);
                 gameUserIDS.remove(index);
                 gameUsers.remove(index);
+                gmUsersAdapter.removeUser(uID, userInfo);
                 checkUsers();
             }
 
@@ -301,10 +305,13 @@ public class GameActivity extends AppCompatActivity
                                 dvMain.setVisibility(View.VISIBLE);
                                 fab.setVisibility(View.VISIBLE);
                                 etGuess.setVisibility(View.INVISIBLE);
+                                etGuess.setHint("");
                             } else {
                                 ivProjectedCanvas.setVisibility(View.VISIBLE);
                                 dvMain.setVisibility(View.GONE);
                                 fab.setVisibility(View.GONE);
+                                etGuess.setVisibility(View.VISIBLE);
+                                etGuess.setHint("Guess");
                             }
 
                             Log.d("gs", "DRAWING");

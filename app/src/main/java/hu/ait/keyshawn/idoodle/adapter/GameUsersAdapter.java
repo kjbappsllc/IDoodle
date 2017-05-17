@@ -84,6 +84,16 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
 
     }
 
+    public void removeUser(String ID, String userInfo){
+        String[] userElements = userInfo.split(",");
+        String username = userElements[0];
+        int index = userIDs.indexOf(ID);
+        userIDs.remove(index);
+        userList.remove(index);
+        notifyItemRemoved(index);
+        Toast.makeText(context, ""+ username + " has left", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public int getItemCount() {
         return userList.size();
