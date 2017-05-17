@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -85,10 +86,12 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
 
     public void addUser(String ID, String userInfo){
         this.userIDs.add(0,ID);
+        String[] userElements = userInfo.split(",");
+        String username = userElements[0];
         this.userList.add(0,userInfo);
         notifyItemInserted(0);
+        Toast.makeText(context, ""+ username + " has entered", Toast.LENGTH_SHORT).show();
 
-        Log.d("users", "item added");
     }
 
     @Override

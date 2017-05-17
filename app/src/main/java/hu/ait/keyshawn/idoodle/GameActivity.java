@@ -201,20 +201,24 @@ public class GameActivity extends AppCompatActivity
                 String currentGameURL = dataSnapshot.getValue(String.class);
 
                 if(!TextUtils.isEmpty(currentGameURL)){
-                    Glide
-                            .with(GameActivity.this)
-                            .load(currentGameURL)
-                            .asBitmap()
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .skipMemoryCache(true)
-                            .dontAnimate()
-                            .into(new SimpleTarget<Bitmap>() {
+                    try {
+                        Glide
+                                .with(GameActivity.this)
+                                .load(currentGameURL)
+                                .asBitmap()
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .skipMemoryCache(true)
+                                .dontAnimate()
+                                .into(new SimpleTarget<Bitmap>() {
 
-                                @Override
-                                public void onResourceReady(Bitmap arg0, GlideAnimation<? super Bitmap> arg1) {
-                                    ivProjectedCanvas.setImageBitmap(arg0);
-                                }
-                            });
+                                    @Override
+                                    public void onResourceReady(Bitmap arg0, GlideAnimation<? super Bitmap> arg1) {
+                                        ivProjectedCanvas.setImageBitmap(arg0);
+                                    }
+                                });
+                    }
+                    catch (Exception e){
+                    }
                 }
             }
 
@@ -237,6 +241,7 @@ public class GameActivity extends AppCompatActivity
                 gameUsers.put(ID, userInfo);
                 gameUserIDS.add(ID);
                 gmUsersAdapter.addUser(ID, userInfo);
+                rvUsers.scrollToPosition(0);
                 checkUsers();
 
             }
