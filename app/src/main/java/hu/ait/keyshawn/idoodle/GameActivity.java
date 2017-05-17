@@ -376,7 +376,7 @@ public class GameActivity extends AppCompatActivity
     private void startGame() {
         String newGs = Gamestate.GameStateToString(Gamestate.drawingPhase);
 
-        if(gameUsers.size() >= 1){
+        if(gameUsers.size() >= 2){
             getNewDrawer(newGs);
             btnStart.setVisibility(View.GONE);
             tvWaiting.setVisibility(View.GONE);
@@ -392,7 +392,7 @@ public class GameActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int roundNumber = dataSnapshot.getValue(int.class);
-                int index = roundNumber % gameUsers.size();
+                int index = roundNumber % gameUsers.size()-1;
 
                 String nextUserID = gameUserIDS.get(index);
 
