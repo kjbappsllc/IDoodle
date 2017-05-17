@@ -167,6 +167,7 @@ public class GameActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 hostUserID = dataSnapshot.getValue(String.class);
+                gmUsersAdapter.setCurrentHostID(hostUserID);
             }
 
             @Override
@@ -262,6 +263,7 @@ public class GameActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 currentDrawerID = dataSnapshot.getValue(String.class);
+                gmUsersAdapter.setCurrentDrawerID(currentDrawerID);
             }
 
             @Override
