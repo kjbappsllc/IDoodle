@@ -2,6 +2,7 @@ package hu.ait.keyshawn.idoodle;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -121,6 +122,7 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     private void initNewGameDB(String gameName) {
+        Resources res = getResources();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         String gameKey = mDatabase.child(constants.db_Games).push().getKey();
 
@@ -133,13 +135,18 @@ public class LobbyActivity extends AppCompatActivity {
             currentUser.setCurrentGameID(newGame.getUid());
             mDatabase.child(constants.db_Users).child(currentUser.getUid()).setValue(currentUser);
             mDatabase.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_hostID).setValue(currentUser.getUid());
-            mDatabase.child(constants.db_Games).child(gameKey).child(constants.db_Games_Userlist).child(currentUser.getUid()).setValue(0);
+            mDatabase.child(constants.db_Games).
+                    child(gameKey).
+                    child(constants.db_Games_Userlist).
+                    child(currentUser.getUid()).
+                    setValue(res.getString(R.string.userInfo, getCurrentUser().getUsername(), 0));
 
             showGameActivity(newGame.getGameName());
         }
     }
 
     public void initJoinGameDB(String gameID, String gameName) {
+        Resources res = getResources();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         user currentUser = getCurrentUser();
@@ -147,7 +154,10 @@ public class LobbyActivity extends AppCompatActivity {
         if(currentUser != null) {
             currentUser.setCurrentGameID(gameID);
             mDatabase.child(constants.db_Users).child(currentUser.getUid()).setValue(currentUser);
-            mDatabase.child(constants.db_Games).child(gameID).child(constants.db_Games_Userlist).child(currentUser.getUid()).setValue(0);
+            mDatabase.child(constants.db_Games).
+                    child(gameID).child(constants.db_Games_Userlist).
+                    child(currentUser.getUid()).
+                    setValue(res.getString(R.string.userInfo, getCurrentUser().getUsername(), 0));
 
             showGameActivity(gameName);
         }

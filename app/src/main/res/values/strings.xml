@@ -26,4 +26,7 @@
     <!-- Strings related to the Lobby -->
     <string name="RoundNumber">Round: %1$d</string>
     <string name="UserNumber">Users: %1$d</string>
+
+    <!-- Strings related to the inGame -->
+    <string name="userInfo">%1$s,%2$d</string>
 </resources>

@@ -1,9 +1,13 @@
 package hu.ait.keyshawn.idoodle;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -52,6 +56,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import hu.ait.keyshawn.idoodle.View.DrawingView;
+import hu.ait.keyshawn.idoodle.adapter.GameUsersAdapter;
+import hu.ait.keyshawn.idoodle.adapter.LobbyAdapter;
 import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.game;
 import hu.ait.keyshawn.idoodle.data.gamestate;
@@ -68,9 +74,11 @@ public class GameActivity extends AppCompatActivity
     public Button btnStart;
     public TextView tvWaiting;
     public EditText etGuess;
+    public RecyclerView rvUsers;
+    public GameUsersAdapter gmUsersAdapter;
     Chronometer chronTimer;
     public String hostUserID;
-    public HashMap<String , Integer> gameUsers = new HashMap<>();
+    public HashMap<String , String> gameUsers = new HashMap<>();
     public List<String> gameUserIDS = new ArrayList<>();
 
     @Override
@@ -84,8 +92,6 @@ public class GameActivity extends AppCompatActivity
 
         initDB();
 
-        initUI();
-
         initGameDrawingEventLister();
 
         initGameUserListEventListener();
@@ -95,6 +101,8 @@ public class GameActivity extends AppCompatActivity
         initCurrentDrawerEventListener();
 
         initGameStateEventListener();
+
+        initUI();
 
     }
 
@@ -109,6 +117,8 @@ public class GameActivity extends AppCompatActivity
     private void initUI() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        setUpDrawer(toolbar);
 
         dvMain = (DrawingView) findViewById(R.id.dvMainCanvas);
         ivProjectedCanvas = (ImageView) findViewById(R.id.ivProjectedCanvas);
@@ -132,15 +142,42 @@ public class GameActivity extends AppCompatActivity
                 startGame();
             }
         });
+    }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+    private void setUpDrawer(Toolbar toolbar) {
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
+        Drawable drawable = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_users, this.getTheme());
+        mDrawerToggle.setHomeAsUpIndicator(drawable);
+        mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerVisible(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                } else {
+                    drawer.openDrawer(GravityCompat.START);
+                }
+            }
+        });
+
+        drawer.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        rvUsers = (RecyclerView) drawer.findViewById(R.id.rvUsers);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        rvUsers.setHasFixedSize(true);
+        rvUsers.setLayoutManager(layoutManager);
+        gmUsersAdapter = new GameUsersAdapter(this);
+        rvUsers.setAdapter(gmUsersAdapter);
+
+        TextView tvheaderText = (TextView) drawer.findViewById(R.id.headerView);
+        tvheaderText.setText(getCurrentUser().getUsername());
     }
 
     public void initGameHostIDEventListener() {
@@ -195,10 +232,11 @@ public class GameActivity extends AppCompatActivity
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 String ID = dataSnapshot.getKey();
-                int numPoints = dataSnapshot.getValue(int.class);
+                String userInfo = dataSnapshot.getValue(String.class);
 
-                gameUsers.put(ID, numPoints);
+                gameUsers.put(ID, userInfo);
                 gameUserIDS.add(ID);
+                gmUsersAdapter.addUser(ID, userInfo);
                 checkUsers();
 
             }
@@ -321,6 +359,7 @@ public class GameActivity extends AppCompatActivity
                 child("currentGameID").setValue("");
     }
 
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -330,6 +369,12 @@ public class GameActivity extends AppCompatActivity
             leaveGame();
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        leaveGame();
+        super.onDestroy();
     }
 
     private void startGame() {
@@ -351,10 +396,9 @@ public class GameActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int roundNumber = dataSnapshot.getValue(int.class);
-
                 int index = roundNumber % gameUsers.size();
 
-                String nextUserID = gameUserIDS.get(index-1);
+                String nextUserID = gameUserIDS.get(index);
 
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_currentDrawer).setValue(nextUserID);
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_gameState).setValue(newGs);

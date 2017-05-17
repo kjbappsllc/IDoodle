@@ -14,7 +14,7 @@ public class game {
     private int roundNumber;
     private String gameState;
     private String currentDrawer;
-    private HashMap<String, Integer> userList;
+    private HashMap<String, String> userList;
 
     public game(String uid, String gameName) {
         this.uid = uid;
@@ -70,11 +70,11 @@ public class game {
         this.hostUserID = hostUserID;
     }
 
-    public HashMap<String, Integer> getUserList() {
+    public HashMap<String, String> getUserList() {
         return userList;
     }
 
-    public void setUserList(HashMap<String, Integer> userList) {
+    public void setUserList(HashMap<String, String> userList) {
         this.userList = userList;
     }
 
