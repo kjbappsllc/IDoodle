@@ -26,6 +26,19 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"/>
 
+        <TextView
+            android:id="@+id/tvWordDraw"
+            android:background="#ffc022"
+            android:padding="3dp"
+            android:layout_marginTop="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            android:text="@string/loading"
+            android:textSize="25sp"
+            android:textColor="#000000" />
+
     </RelativeLayout>
 
     <hu.ait.keyshawn.idoodle.View.DrawingView
@@ -73,8 +86,10 @@
                 android:id="@+id/etGuess"
                 android:layout_width="match_parent"
                 android:maxLines="1"
+                android:imeOptions="actionSend"
+                android:imeActionLabel="Send"
                 android:layout_height="match_parent"
-                android:inputType="text"/>
+                android:inputType="text|textAutoCorrect"/>
 
         </android.support.design.widget.TextInputLayout>
 

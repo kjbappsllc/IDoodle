@@ -10,11 +10,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import hu.ait.keyshawn.idoodle.GameActivity;
 import hu.ait.keyshawn.idoodle.R;
+import hu.ait.keyshawn.idoodle.data.User;
 
 /**
  * Created by mac on 5/16/17.
@@ -23,14 +26,17 @@ import hu.ait.keyshawn.idoodle.R;
 public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.ViewHolder> {
 
     private List<String> userList;
+    private DatabaseReference userDb;
     private List<String> userIDs;
     private String currentDrawerID = "";
     private String currentHostID = "";
-    private DatabaseReference mData;
     private Context context;
 
     public GameUsersAdapter(Context context){
         this.context = context;
+        currentDrawerID = "";
+        currentHostID = "";
+        userDb = FirebaseDatabase.getInstance().getReference();
         userList = new ArrayList<>();
         userIDs = new ArrayList<>();
     }
@@ -65,13 +71,38 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
     }
 
     public void setCurrentDrawerID(String currentDrawerID){
+        int indexCurrent = -1;
+        int indexNew;
+
+        if(currentDrawerID != null){
+            indexCurrent = userIDs.indexOf(currentDrawerID);
+        }
+
         this.currentDrawerID = currentDrawerID;
-        notifyDataSetChanged();
+        indexNew = userIDs.indexOf(currentDrawerID);
+        notifyItemChanged(indexNew);
+
+        if(indexCurrent != -1){
+            notifyItemChanged(indexCurrent);
+        }
     }
 
     public void setCurrentHostID(String currentHostID){
+        int indexCurrent = -1;
+        int indexNew;
+
+        if(currentHostID != null){
+            indexCurrent = userIDs.indexOf(currentHostID);
+
+        }
+
         this.currentHostID = currentHostID;
-        notifyDataSetChanged();
+        indexNew = userIDs.indexOf(currentHostID);
+        notifyItemChanged(indexNew);
+
+        if(indexCurrent != -1){
+            notifyItemChanged(indexCurrent);
+        }
     }
 
     public void addUser(String ID, String userInfo){
@@ -80,8 +111,10 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         String username = userElements[0];
         this.userList.add(0,userInfo);
         notifyItemInserted(0);
-        Toast.makeText(context, ""+ username + " has entered", Toast.LENGTH_SHORT).show();
 
+        if(!getCurrentUser().getUid().equals(ID)) {
+            Toast.makeText(context, "" + username + " has entered", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void removeUser(String ID, String userInfo){
@@ -91,13 +124,21 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         userIDs.remove(index);
         userList.remove(index);
         notifyItemRemoved(index);
-        Toast.makeText(context, ""+ username + " has left", Toast.LENGTH_SHORT).show();
+
+        if(!getCurrentUser().getUid().equals(ID)) {
+            Toast.makeText(context, "" + username + " has left", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
     public int getItemCount() {
         return userList.size();
     }
+
+    private User getCurrentUser(){
+        return ((GameActivity)context).getCurrentUser();
+    }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private ImageView ivHostID;

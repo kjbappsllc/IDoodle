@@ -29,4 +29,7 @@
 
     <!-- Strings related to the inGame -->
     <string name="userInfo">%1$s,%2$d</string>
+    <string name="username">Username</string>
+    <string name="round">Round: %1$d</string>
+    <string name="loading">Loading...</string>
 </resources>

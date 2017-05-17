@@ -96,6 +96,7 @@ public class LobbyActivity extends AppCompatActivity {
 
         final EditText etGameName = new EditText(this);
         etGameName.setHint("Game Name");
+        etGameName.setMaxLines(1);
         alertDialogBuilder.setView(etGameName);
 
         alertDialogBuilder.setPositiveButton("Create", new DialogInterface.OnClickListener() {

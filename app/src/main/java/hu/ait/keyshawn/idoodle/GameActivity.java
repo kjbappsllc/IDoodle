@@ -38,6 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import hu.ait.keyshawn.idoodle.View.DrawingView;
 import hu.ait.keyshawn.idoodle.adapter.GameUsersAdapter;
@@ -59,7 +60,12 @@ public class GameActivity extends AppCompatActivity
     public RecyclerView rvUsers;
     public GameUsersAdapter gmUsersAdapter;
     Chronometer chronTimer;
+    public TextView tvWordDraw;
     public String hostUserID;
+    int roundNumber = 1;
+    String currentWord = "";
+    List<Integer> playedWords = new ArrayList<>();
+    public TextView tvHeaderViewRound;
     public HashMap<String , String> gameUsers = new HashMap<>();
     public List<String> gameUserIDS = new ArrayList<>();
 
@@ -84,6 +90,8 @@ public class GameActivity extends AppCompatActivity
 
         initGameStateEventListener();
 
+        initRoundNumberEventListener();
+
         initUI();
 
     }
@@ -106,6 +114,7 @@ public class GameActivity extends AppCompatActivity
         ivProjectedCanvas = (ImageView) findViewById(R.id.ivProjectedCanvas);
         chronTimer = (Chronometer) findViewById(R.id.chronTimer);
         etGuess = (EditText) findViewById(R.id.etGuess);
+        tvWordDraw = (TextView) findViewById(R.id.tvWordDraw);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -151,6 +160,10 @@ public class GameActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        setUpRecyclerViewInsideDrawer(drawer);
+    }
+
+    private void setUpRecyclerViewInsideDrawer(DrawerLayout drawer) {
         rvUsers = (RecyclerView) drawer.findViewById(R.id.rvUsers);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rvUsers.setHasFixedSize(true);
@@ -160,6 +173,9 @@ public class GameActivity extends AppCompatActivity
 
         TextView tvheaderText = (TextView) drawer.findViewById(R.id.headerView);
         tvheaderText.setText(getCurrentUser().getUsername());
+
+        tvHeaderViewRound = (TextView) drawer.findViewById(R.id.tvHeaderViewRound);
+        tvHeaderViewRound.setText(getString(R.string.round, roundNumber));
     }
 
     public void initGameHostIDEventListener() {
@@ -301,6 +317,7 @@ public class GameActivity extends AppCompatActivity
                             btnStart.setVisibility(View.GONE);
                             tvWaiting.setVisibility(View.GONE);
                             chronTimer.setVisibility(View.VISIBLE);
+                            getNewWord();
 
                             if(currentDrawerID.equals(getCurrentUser().getUid())){
                                 ivProjectedCanvas.setVisibility(View.GONE);
@@ -309,6 +326,7 @@ public class GameActivity extends AppCompatActivity
                                 etGuess.setVisibility(View.INVISIBLE);
                                 etGuess.setHint("");
                             } else {
+                                tvWordDraw.setVisibility(View.INVISIBLE);
                                 ivProjectedCanvas.setVisibility(View.VISIBLE);
                                 dvMain.setVisibility(View.GONE);
                                 fab.setVisibility(View.GONE);
@@ -327,6 +345,24 @@ public class GameActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    public void initRoundNumberEventListener() {
+        if(getCurrentUser().getCurrentGameID().isEmpty()) {
+            mDatabase.child(constants.db_Games).
+                    child(getCurrentUser().getCurrentGameID()).
+                    child(constants.db_Games_roundNumber).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    roundNumber = dataSnapshot.getValue(int.class);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 
     public void checkUsers() {
@@ -353,6 +389,10 @@ public class GameActivity extends AppCompatActivity
         mDatabase.child(constants.db_Users).
                 child(getCurrentUser().getUid()).
                 child("currentGameID").setValue("");
+
+        User currentUser = getCurrentUser();
+        currentUser.setCurrentGameID("");
+        ((MainApplication)getApplication()).setCurrentUser(currentUser);
     }
 
 
@@ -369,14 +409,15 @@ public class GameActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
-        leaveGame();
         super.onDestroy();
+        leaveGame();
+        finish();
     }
 
     private void startGame() {
         String newGs = Gamestate.GameStateToString(Gamestate.drawingPhase);
 
-        if(gameUsers.size() >= 2){
+        if(gameUsers.size() >= 1){
             getNewDrawer(newGs);
             btnStart.setVisibility(View.GONE);
             tvWaiting.setVisibility(View.GONE);
@@ -392,12 +433,45 @@ public class GameActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int roundNumber = dataSnapshot.getValue(int.class);
-                int index = roundNumber % gameUsers.size()-1;
+                int index = roundNumber % gameUsers.size();
 
                 String nextUserID = gameUserIDS.get(index);
 
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_currentDrawer).setValue(nextUserID);
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_gameState).setValue(newGs);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getNewWord() {
+
+        Random randomGen = new Random();
+        int num = randomGen.nextInt(15);
+        while (playedWords.contains(num)){
+            num = randomGen.nextInt(15);
+        }
+
+        playedWords.add(num);
+
+        mDatabase.child(constants.db_Words).
+                child(Integer.toString(num)).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                currentWord = dataSnapshot.getValue(String.class);
+
+                String[]available = currentWord.split(",");
+
+                if(getCurrentUser().getUid().equals(currentDrawerID)) {
+                    tvWordDraw.setText(available[0]);
+                    tvWordDraw.setVisibility(View.VISIBLE);
+                } else {
+                    tvWordDraw.setVisibility(View.INVISIBLE);
+                }
             }
 
             @Override
