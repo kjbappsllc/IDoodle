@@ -15,11 +15,11 @@
         android:background="#9d9fff"
         android:layout_height="wrap_content">
 
-        <Chronometer
-            android:id="@+id/chronTimer"
+        <TextView
+            android:id="@+id/tvTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
+            android:textSize="22sp"
             android:textColor="#ffffff"
             android:layout_marginTop="40dp"
             android:visibility="gone"

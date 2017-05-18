@@ -17,6 +17,7 @@ import java.util.List;
 
 import hu.ait.keyshawn.idoodle.GameActivity;
 import hu.ait.keyshawn.idoodle.R;
+import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.User;
 
 /**
@@ -124,6 +125,12 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         userIDs.remove(index);
         userList.remove(index);
         notifyItemRemoved(index);
+
+        if(userList.isEmpty()){
+            userDb = FirebaseDatabase.getInstance().getReference();
+            userDb.child(constants.db_Games).
+                    child(getCurrentUser().getCurrentGameID()).removeValue();
+        }
 
         if(!getCurrentUser().getUid().equals(ID)) {
             Toast.makeText(context, "" + username + " has left", Toast.LENGTH_SHORT).show();

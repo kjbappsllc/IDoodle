@@ -5,7 +5,7 @@ package hu.ait.keyshawn.idoodle.data;
  */
 
 public enum Gamestate {
-    preGamePhase, drawingPhase, endGamePhase;
+    preGamePhase, drawingPhase, endRoundPhase, endGamePhase;
 
     public static Gamestate StringToGameState(String gs){
         return Gamestate.valueOf(gs);

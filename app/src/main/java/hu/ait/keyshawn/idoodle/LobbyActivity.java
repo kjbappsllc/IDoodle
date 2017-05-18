@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kekstudio.dachshundtablayout.DachshundTabLayout;
+import com.kekstudio.dachshundtablayout.indicators.DachshundIndicator;
 import com.kekstudio.dachshundtablayout.indicators.LineMoveIndicator;
 
 import hu.ait.keyshawn.idoodle.adapter.LobbyAdapter;
@@ -47,7 +48,7 @@ public class LobbyActivity extends AppCompatActivity {
 
         DachshundTabLayout tabLayout = (DachshundTabLayout) findViewById(R.id.tab_layout);
 
-        LineMoveIndicator lineMoveIndicator = new LineMoveIndicator(tabLayout);
+        LineMoveIndicator dachshundIndicator = new LineMoveIndicator(tabLayout);
 
         FragmentPager myFragmentPager =
                 new FragmentPager(getSupportFragmentManager());
@@ -55,7 +56,7 @@ public class LobbyActivity extends AppCompatActivity {
         viewPager.setAdapter(myFragmentPager);
 
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setAnimatedIndicator(lineMoveIndicator);
+        tabLayout.setAnimatedIndicator(dachshundIndicator);
 
     }
 

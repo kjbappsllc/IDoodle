@@ -32,4 +32,6 @@
     <string name="username">Username</string>
     <string name="round">Round: %1$d</string>
     <string name="loading">Loading...</string>
+    <string name="countdown">%1$dsecs</string>
+    <string name="countdownIntermission">Next round in %1$dsecs..</string>
 </resources>
