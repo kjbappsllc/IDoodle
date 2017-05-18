@@ -28,6 +28,7 @@ import java.io.ByteArrayOutputStream;
 import hu.ait.keyshawn.idoodle.GameActivity;
 import hu.ait.keyshawn.idoodle.MainApplication;
 import hu.ait.keyshawn.idoodle.constants.constants;
+import hu.ait.keyshawn.idoodle.data.Gamestate;
 import hu.ait.keyshawn.idoodle.data.User;
 
 /**
@@ -186,13 +187,14 @@ public class DrawingView extends View {
     }
 
     private void touch_up() {
-        mPath.lineTo(mX, mY);
-        circlePath.reset();
-        // commit the path to our offscreen
-        mCanvas.drawPath(mPath,  mPaint);
-        saveDrawing();
-        // kill this so we don't double draw
+        if(((GameActivity)context).gameState.equals(Gamestate.GameStateToString(Gamestate.drawingPhase))) {
+            mPath.lineTo(mX, mY);
+            circlePath.reset();
+            mCanvas.drawPath(mPath, mPaint);
+        }
+
         mPath.reset();
+        saveDrawing();
     }
 
     @Override

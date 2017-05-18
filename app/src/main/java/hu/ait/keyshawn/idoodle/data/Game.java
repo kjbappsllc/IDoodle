@@ -1,6 +1,8 @@
 package hu.ait.keyshawn.idoodle.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class Game {
@@ -12,6 +14,7 @@ public class Game {
     private String gameState;
     private String currentDrawer;
     private HashMap<String, String> userList;
+    private List<Message> messageList;
 
     public Game(String uid, String gameName) {
         this.uid = uid;
@@ -21,6 +24,7 @@ public class Game {
         this.roundNumber = 1;
         this.userList = new HashMap<>();
         this.hostUserID = "";
+        this.messageList = new ArrayList<>();
         this.gameState = saveGameState(Gamestate.preGamePhase);
     }
 
@@ -89,6 +93,14 @@ public class Game {
 
     public void setCurrentDrawer(String currentDrawer) {
         this.currentDrawer = currentDrawer;
+    }
+
+    public List<Message> getMessageList() {
+        return messageList;
+    }
+
+    public void setMessageList(List<Message> messageList) {
+        this.messageList = messageList;
     }
 }
 

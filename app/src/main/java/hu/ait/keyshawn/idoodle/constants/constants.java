@@ -23,4 +23,6 @@ public interface constants {
 
     public static final String db_Words = "words";
 
+    public static final String db_Games_messages = "messages";
+
 }

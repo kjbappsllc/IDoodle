@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,6 +20,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
@@ -44,8 +46,10 @@ import java.util.Random;
 
 import hu.ait.keyshawn.idoodle.View.DrawingView;
 import hu.ait.keyshawn.idoodle.adapter.GameUsersAdapter;
+import hu.ait.keyshawn.idoodle.adapter.MessagesAdapter;
 import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.Gamestate;
+import hu.ait.keyshawn.idoodle.data.Message;
 import hu.ait.keyshawn.idoodle.data.User;
 
 public class GameActivity extends AppCompatActivity {
@@ -59,6 +63,8 @@ public class GameActivity extends AppCompatActivity {
     public TextView tvWaiting;
     public EditText etGuess;
     public RecyclerView rvUsers;
+    public RecyclerView rvMessages;
+    public MessagesAdapter gmMessagesAdaper;
     public GameUsersAdapter gmUsersAdapter;
     public TextView tvTimer;
     public CountDownTimer drawingTimer;
@@ -95,6 +101,8 @@ public class GameActivity extends AppCompatActivity {
         initGameStateEventListener();
 
         initRoundNumberEventListener();
+
+        initMessageEventListener();
 
         initUI();
 
@@ -137,11 +145,49 @@ public class GameActivity extends AppCompatActivity {
         dvMain = (DrawingView) findViewById(R.id.dvMainCanvas);
         ivProjectedCanvas = (ImageView) findViewById(R.id.ivProjectedCanvas);
         etGuess = (EditText) findViewById(R.id.etGuess);
+        etGuess.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    sendMessage();
+                    etGuess.setText("");
+                    handled = true;
+                }
+                return handled;
+            }
+        });
         tvWordDraw = (TextView) findViewById(R.id.tvWordDraw);
         tvTimer = (TextView) findViewById(R.id.tvTimer);
         btnStart = (Button) findViewById(R.id.btnStart);
         tvWaiting = (TextView) findViewById(R.id.tvWaiting);
         fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        rvMessages = (RecyclerView) findViewById(R.id.rvMessages);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        rvMessages.setHasFixedSize(true);
+        rvMessages.setLayoutManager(layoutManager);
+        gmMessagesAdaper = new MessagesAdapter(this);
+        rvMessages.setAdapter(gmMessagesAdaper);
+
+    }
+
+    private void sendMessage() {
+        if(!TextUtils.isEmpty(etGuess.getText().toString())){
+            String sender = getCurrentUser().getUsername();
+            String message = etGuess.getText().toString();
+            Message newMessage = new Message(sender,message);
+
+            String msgKey = getCurrentGameReference().
+                    child(constants.db_Games_messages).push().getKey();
+
+            getCurrentGameReference().
+                    child(constants.db_Games_messages).
+                    child(msgKey).setValue(newMessage);
+        }
+        else {
+            etGuess.setError("Please Enter Text");
+        }
     }
 
     private void setUpDrawer(Toolbar toolbar) {
@@ -168,10 +214,10 @@ public class GameActivity extends AppCompatActivity {
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
 
-        setUpRecyclerViewInsideDrawer(drawer);
+        setUpUIInsideDrawer(drawer);
     }
 
-    private void setUpRecyclerViewInsideDrawer(DrawerLayout drawer) {
+    private void setUpUIInsideDrawer(DrawerLayout drawer) {
         rvUsers = (RecyclerView) drawer.findViewById(R.id.rvUsers);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rvUsers.setHasFixedSize(true);
@@ -307,6 +353,37 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
+    public void initMessageEventListener() {
+        getCurrentGameReference().child(constants.db_Games_messages).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Message newMessage = dataSnapshot.getValue(Message.class);
+                Log.d("gamestate", newMessage.getBody());
+                gmMessagesAdaper.addMessage(newMessage);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void initGameStateEventListener() {
         getCurrentGameReference()
                 .child(constants.db_Games_gameState).addValueEventListener(new ValueEventListener() {
@@ -431,7 +508,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startIntermissionTimer() {
-        intermissionTimer = new CountDownTimer(6000, 1000) {
+        intermissionTimer = new CountDownTimer(9000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 tvTimer.setTextColor(Color.WHITE);
@@ -450,6 +527,7 @@ public class GameActivity extends AppCompatActivity {
             dvMain.clearDrawing();
         }
 
+        clearMessages();
         dvMain.setVisibility(View.GONE);
         ivProjectedCanvas.setVisibility(View.VISIBLE);
         fab.setVisibility(View.GONE);
@@ -459,6 +537,12 @@ public class GameActivity extends AppCompatActivity {
                 child(constants.db_Games_DrawingURL).setValue("");
         ivProjectedCanvas.setImageBitmap(null);
         etGuess.setVisibility(View.VISIBLE);
+        etGuess.setText("");
+    }
+
+    private void clearMessages() {
+        getCurrentGameReference().child(constants.db_Games_messages).removeValue();
+        gmMessagesAdaper.clear();
     }
 
     public void initRoundNumberEventListener() {
@@ -587,5 +671,9 @@ public class GameActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void scrollMessageRecycler(int position){
+        rvMessages.scrollToPosition(position);
     }
 }
