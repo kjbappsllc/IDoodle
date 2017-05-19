@@ -234,7 +234,7 @@ public class GameActivity extends AppCompatActivity {
 
                 mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),points));
 
-                return Transaction.success(mutableData);;
+                return Transaction.success(mutableData);
             }
 
             @Override
