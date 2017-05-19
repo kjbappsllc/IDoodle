@@ -21,6 +21,8 @@ public interface constants {
 
     public static final String db_Games_currentDrawer = "currentDrawer";
 
+    public static final String db_Games_currentWord =  "currentWord";
+
     public static final String db_Words = "words";
 
     public static final String db_Games_messages = "messages";

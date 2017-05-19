@@ -13,11 +13,13 @@ public class Game {
     private int roundNumber;
     private String gameState;
     private String currentDrawer;
+    private String currentWord;
     private HashMap<String, String> userList;
     private List<Message> messageList;
 
     public Game(String uid, String gameName) {
         this.uid = uid;
+        this.currentWord = "";
         this.drawingUrl = "";
         this.currentDrawer = "";
         this.gameName = gameName;
@@ -101,6 +103,14 @@ public class Game {
 
     public void setMessageList(List<Message> messageList) {
         this.messageList = messageList;
+    }
+
+    public String getCurrentWord() {
+        return currentWord;
+    }
+
+    public void setCurrentWord(String currentWord) {
+        this.currentWord = currentWord;
     }
 }
 

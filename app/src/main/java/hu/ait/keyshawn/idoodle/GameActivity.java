@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -104,6 +105,8 @@ public class GameActivity extends AppCompatActivity {
 
         initMessageEventListener();
 
+        initCurrentWordListener();
+
         initUI();
 
     }
@@ -150,9 +153,13 @@ public class GameActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    sendMessage();
-                    etGuess.setText("");
-                    handled = true;
+                    if(!TextUtils.isEmpty(etGuess.getText().toString())) {
+                        String sender = getCurrentUser().getUsername();
+                        String message = etGuess.getText().toString();
+                        sendMessage(sender,message);
+                        etGuess.setText("");
+                        handled = true;
+                    }
                 }
                 return handled;
             }
@@ -172,10 +179,8 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-    private void sendMessage() {
+    private void sendMessage(String sender, String message) {
         if(!TextUtils.isEmpty(etGuess.getText().toString())){
-            String sender = getCurrentUser().getUsername();
-            String message = etGuess.getText().toString();
             Message newMessage = new Message(sender,message);
 
             String msgKey = getCurrentGameReference().
@@ -384,6 +389,31 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
+    public void initCurrentWordListener() {
+        getCurrentGameReference().
+                child(constants.db_Games_currentWord).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    currentWord = dataSnapshot.getValue(String.class);
+                    String[] available = currentWord.split(",");
+
+                    if (getCurrentUser().getUid().equals(currentDrawerID)) {
+                        tvWordDraw.setText(available[0]);
+                        tvWordDraw.setVisibility(View.VISIBLE);
+                    } else {
+                        tvWordDraw.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void initGameStateEventListener() {
         getCurrentGameReference()
                 .child(constants.db_Games_gameState).addValueEventListener(new ValueEventListener() {
@@ -438,7 +468,10 @@ public class GameActivity extends AppCompatActivity {
         btnStart.setVisibility(View.GONE);
         tvWaiting.setVisibility(View.GONE);
         tvTimer.setVisibility(View.VISIBLE);
-        getNewWord();
+
+        if(currentDrawerID.equals(getCurrentUser().getUid())) {
+            getNewWord();
+        }
 
         setUpCavnasUI();
 
@@ -587,7 +620,6 @@ public class GameActivity extends AppCompatActivity {
         ((MainApplication)getApplication()).setCurrentUser(currentUser);
     }
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -654,16 +686,9 @@ public class GameActivity extends AppCompatActivity {
                 child(Integer.toString(num)).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                currentWord = dataSnapshot.getValue(String.class);
-
-                String[]available = currentWord.split(",");
-
-                if(getCurrentUser().getUid().equals(currentDrawerID)) {
-                    tvWordDraw.setText(available[0]);
-                    tvWordDraw.setVisibility(View.VISIBLE);
-                } else {
-                    tvWordDraw.setVisibility(View.INVISIBLE);
-                }
+                String newWord = dataSnapshot.getValue(String.class);
+                getCurrentGameReference().
+                        child(constants.db_Games_currentWord).setValue(newWord);
             }
 
             @Override
