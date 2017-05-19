@@ -467,6 +467,9 @@ public class GameActivity extends AppCompatActivity {
                         case endRoundPhase:
                             doEndRoundPhase();
                             break;
+                        case endGamePhase:
+                            doEndGamePhase();
+                            break;
                     }
                 }
             }
@@ -476,6 +479,18 @@ public class GameActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void doEndGamePhase() {
+        stopIntermissionTimer();
+        stopDrawingTimer();
+        clearUI();
+
+        String newGS = Gamestate.GameStateToString(Gamestate.preGamePhase);
+
+        getCurrentGameReference().
+                child(constants.db_Games_gameState).
+                setValue(newGS);
     }
 
     private void doEndRoundPhase() {
@@ -706,7 +721,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int roundNumber = dataSnapshot.getValue(int.class);
-                int index = roundNumber-1 % gameUserIDS.size();
+                int index = (roundNumber-1) % gameUserIDS.size();
                 Log.d("rounds", "gameUserSize: " + gameUserIDS.size());
                 Log.d("rounds", "roundNumber: " + roundNumber);
                 Log.d("rounds", "index: " + index);

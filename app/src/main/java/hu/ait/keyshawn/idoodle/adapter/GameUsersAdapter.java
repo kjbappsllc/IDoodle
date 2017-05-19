@@ -108,7 +108,7 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
                     child(getCurrentUser().getCurrentGameID()).removeValue();
         }
 
-        if(!getCurrentUser().getUid().equals(ID)) {
+        if(!getCurrentUser().getUid().equals(ID) && !getCurrentUser().getCurrentGameID().isEmpty()) {
             Toast.makeText(context, "" + username + " has left", Toast.LENGTH_SHORT).show();
         }
     }
