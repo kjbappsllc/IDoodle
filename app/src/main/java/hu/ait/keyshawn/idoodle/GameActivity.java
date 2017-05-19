@@ -80,7 +80,6 @@ public class GameActivity extends AppCompatActivity {
     int roundNumber = 1;
     String currentWord = "";
     List<Integer> playedWords = new ArrayList<>();
-    List<String> correctAnswerIDs = new ArrayList<>();
     public TextView tvHeaderViewRound;
     public HashMap<String , String> gameUsers = new HashMap<>();
     public List<String> gameUserIDS = new ArrayList<>();
@@ -198,6 +197,7 @@ public class GameActivity extends AppCompatActivity {
                     if(etGuess.getText().toString().equals(word)){
                         sendSystemMessage("YOU GOT IT! The word was: " + available[0]);
                         addPlayerPoints();
+                        addDrawerPoints();
                         shouldSendSystem = true;
                     }
                 }
@@ -224,6 +224,29 @@ public class GameActivity extends AppCompatActivity {
         getCurrentGameReference().
                 child(constants.db_Games_Userlist).
                 child(getCurrentUser().getUid()).runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                String data = mutableData.getValue(String.class);
+                Log.d("gamestate", data);
+                String[] parsedData = data.split(",");
+                Integer points = Integer.valueOf(parsedData[1]);
+                points += 1;
+
+                mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),points));
+
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            }
+        });
+    }
+
+    private void addDrawerPoints(){
+        getCurrentGameReference().
+                child(constants.db_Games_Userlist).
+                child(currentDrawerID).runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 String data = mutableData.getValue(String.class);
@@ -362,7 +385,9 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                String uID = dataSnapshot.getKey();
+                String userInfo = dataSnapshot.getValue(String.class);
+                gmUsersAdapter.updateUser(uID,userInfo);
             }
 
             @Override

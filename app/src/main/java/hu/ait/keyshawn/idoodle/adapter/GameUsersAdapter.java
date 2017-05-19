@@ -113,6 +113,12 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         }
     }
 
+    public void updateUser(String ID, String userInfo) {
+        int index = userIDs.indexOf(ID);
+        userList.set(index,userInfo);
+        notifyItemChanged(index);
+    }
+
     @Override
     public int getItemCount() {
         return userList.size();
