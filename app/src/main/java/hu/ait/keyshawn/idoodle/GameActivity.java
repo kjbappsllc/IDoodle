@@ -345,19 +345,8 @@ public class GameActivity extends AppCompatActivity {
                 gameUsers.remove(index);
 
                 if(uID.equals(hostUserID)) {
-                    if(!gameUserIDS.isEmpty()) {
-                        String newHost = gameUserIDS.get(0);
-
-                        mDatabase.child(constants.db_Games).
-                                child(currentGameID).
-                                child(constants.db_Games_hostID).
-                                setValue(newHost);
-
-                        if(newHost.equals(getCurrentUser().getUid())){
-                            btnStart.setVisibility(View.VISIBLE);
-                            tvWaiting.setVisibility(View.GONE);
-                        }
-                    }
+                    leaveGame();
+                    finish();
                 }
                 gmUsersAdapter.removeUser(uID, userInfo);
             }

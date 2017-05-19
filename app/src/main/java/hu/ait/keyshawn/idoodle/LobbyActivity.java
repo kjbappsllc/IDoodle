@@ -131,7 +131,8 @@ public class LobbyActivity extends AppCompatActivity {
 
         if(currentUser != null) {
             currentUser.setCurrentGameID(newGame.getUid());
-            mDatabase.child(constants.db_Users).child(currentUser.getUid()).setValue(currentUser);
+            mDatabase.child(constants.db_Users).child(currentUser.getUid()).
+                    child(constants.db_Users_currentGameID).setValue(newGame.getUid());
             mDatabase.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_hostID).setValue(currentUser.getUid());
             mDatabase.child(constants.db_Games).
                     child(gameKey).
@@ -151,7 +152,9 @@ public class LobbyActivity extends AppCompatActivity {
 
         if(currentUser != null) {
             currentUser.setCurrentGameID(gameID);
-            mDatabase.child(constants.db_Users).child(currentUser.getUid()).setValue(currentUser);
+            mDatabase.child(constants.db_Users).child(currentUser.getUid()).
+            child(constants.db_Users_currentGameID).setValue(gameID);
+
             mDatabase.child(constants.db_Games).
                     child(gameID).child(constants.db_Games_Userlist).
                     child(currentUser.getUid()).
