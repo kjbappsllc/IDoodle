@@ -38,6 +38,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -123,6 +125,8 @@ public class GameActivity extends AppCompatActivity {
     }
     public DatabaseReference getCurrentGameReference() {return mDatabase.child(constants.db_Games).
             child(getCurrentUser().getCurrentGameID());}
+    public DatabaseReference getCurrentCurrentUserReference() {return mDatabase.child(constants.db_Users).
+            child(getCurrentUser().getUid());}
 
 
     private void initUI() {
@@ -160,8 +164,6 @@ public class GameActivity extends AppCompatActivity {
                     if(!TextUtils.isEmpty(etGuess.getText().toString())) {
                         String sender = getCurrentUser().getUsername();
                         String message = etGuess.getText().toString();
-
-
                         sendMessage(sender,message);
                         etGuess.setText("");
                         handled = true;
@@ -186,6 +188,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void sendMessage(String sender, String message) {
+        boolean shouldSendSystem = false;
         if(!TextUtils.isEmpty(etGuess.getText().toString())){
 
             if(!currentWord.isEmpty()){
@@ -194,23 +197,51 @@ public class GameActivity extends AppCompatActivity {
                 for(String word : available){
                     if(etGuess.getText().toString().equals(word)){
                         sendSystemMessage("YOU GOT IT! The word was: " + available[0]);
+                        addPlayerPoints();
+                        shouldSendSystem = true;
+                        break;
                     }
                 }
 
             }
 
-            Message newMessage = new Message(sender,message);
+            if(!shouldSendSystem) {
+                Message newMessage = new Message(sender, message);
 
-            String msgKey = getCurrentGameReference().
-                    child(constants.db_Games_messages).push().getKey();
+                String msgKey = getCurrentGameReference().
+                        child(constants.db_Games_messages).push().getKey();
 
-            getCurrentGameReference().
-                    child(constants.db_Games_messages).
-                    child(msgKey).setValue(newMessage);
+                getCurrentGameReference().
+                        child(constants.db_Games_messages).
+                        child(msgKey).setValue(newMessage);
+            }
         }
         else {
             etGuess.setError("Please Enter Text");
         }
+    }
+
+    private void addPlayerPoints() {
+        getCurrentGameReference().
+                child(constants.db_Games_Userlist).
+                child(getCurrentUser().getUid()).runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                String data = mutableData.getValue(String.class);
+                String[] parsedData = data.split(",");
+                Integer points = Integer.valueOf(parsedData[1]);
+                points += 1;
+
+                mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),points));
+
+                return null;
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                Log.d("gamestate", dataSnapshot.getValue(String.class));
+            }
+        });
     }
 
     private void sendSystemMessage(String message) {
@@ -476,15 +507,40 @@ public class GameActivity extends AppCompatActivity {
         clearUI();
         tvTimer.setVisibility(View.GONE);
 
-        String newGS = Gamestate.GameStateToString(Gamestate.preGamePhase);
+        updateGamesPlayedAndResetGame();
+    }
 
-        getCurrentGameReference().
-                child(constants.db_Games_gameState).
-                setValue(newGS);
+    private void updateGamesPlayedAndResetGame() {
+        getCurrentCurrentUserReference().
+                child(constants.db_Users_gamesPlayed).runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Integer currentValue = mutableData.getValue(Integer.class);
+                if (currentValue == null) {
+                    mutableData.setValue(1);
+                } else {
+                    mutableData.setValue(currentValue + 1);
+                }
+                return Transaction.success(mutableData);
+            }
 
-        getCurrentGameReference().
-                child(constants.db_Games_currentDrawer).
-                setValue("");
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                User currentUser = getCurrentUser();
+                currentUser.setGamesPlayed(dataSnapshot.getValue(Integer.class));
+                if(hostUserID.equals(getCurrentUser().getUid())){
+                    String newGS = Gamestate.GameStateToString(Gamestate.preGamePhase);
+
+                    getCurrentGameReference().
+                            child(constants.db_Games_gameState).
+                            setValue(newGS);
+
+                    getCurrentGameReference().
+                            child(constants.db_Games_currentDrawer).
+                            setValue("");
+                }
+            }
+        });
     }
 
     private void doEndRoundPhase() {
@@ -538,7 +594,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startDrawingTimer() {
-        drawingTimer = new CountDownTimer(4000, 1000){
+        drawingTimer = new CountDownTimer(10000, 1000){
 
             @Override
             public void onTick(long millisUntilFinished) {
