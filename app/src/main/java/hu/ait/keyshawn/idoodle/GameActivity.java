@@ -529,7 +529,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startDrawingTimer() {
-        drawingTimer = new CountDownTimer(10000, 1000){
+        drawingTimer = new CountDownTimer(7000, 1000){
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -574,7 +574,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startIntermissionTimer() {
-        intermissionTimer = new CountDownTimer(10000, 1000) {
+        intermissionTimer = new CountDownTimer(5000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 tvTimer.setTextColor(Color.WHITE);
@@ -707,7 +707,9 @@ public class GameActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int roundNumber = dataSnapshot.getValue(int.class);
                 int index = roundNumber-1 % gameUserIDS.size();
-
+                Log.d("rounds", "gameUserSize: " + gameUserIDS.size());
+                Log.d("rounds", "roundNumber: " + roundNumber);
+                Log.d("rounds", "index: " + index);
                 String nextUserID = gameUserIDS.get(index);
 
                 getCurrentGameReference().child(constants.db_Games_currentDrawer).setValue(nextUserID);
