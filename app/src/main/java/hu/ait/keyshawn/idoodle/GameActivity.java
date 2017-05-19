@@ -352,6 +352,13 @@ public class GameActivity extends AppCompatActivity {
                                 child(constants.db_Games_hostID).
                                 setValue(newHost);
                     }
+
+                    if(gameState.equals(Gamestate.GameStateToString(Gamestate.preGamePhase))){
+                        mDatabase.child(constants.db_Games).
+                                child(currentGameID).
+                                child(constants.db_Games_gameState).
+                                setValue(Gamestate.GameStateToString(Gamestate.preGamePhase));
+                    }
                 }
                 gmUsersAdapter.removeUser(uID, userInfo);
             }
