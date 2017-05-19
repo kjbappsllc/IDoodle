@@ -7,10 +7,12 @@ package hu.ait.keyshawn.idoodle.data;
 public class Message {
     String sender;
     String body;
+    public Boolean isSystem;
 
     public Message(String sender, String body) {
         this.sender = sender;
         this.body = body;
+        this.isSystem = false;
     }
 
     Message() {}

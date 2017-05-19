@@ -1,6 +1,7 @@
 package hu.ait.keyshawn.idoodle.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        if(messages.get(position).isSystem){
+            holder.tvmsgSender.setTextColor(Color.RED);
+        }
+        else {
+            holder.tvmsgSender.setTextColor(Color.WHITE);
+        }
         holder.tvmsgSender.setText(context.getString(R.string.msgSender,
                 messages.get(position).getSender(),
                 messages.get(position).getBody()));

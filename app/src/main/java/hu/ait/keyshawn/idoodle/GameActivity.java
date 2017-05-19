@@ -76,6 +76,7 @@ public class GameActivity extends AppCompatActivity {
     int roundNumber = 1;
     String currentWord = "";
     List<Integer> playedWords = new ArrayList<>();
+    List<String> correctAnswerIDs = new ArrayList<>();
     public TextView tvHeaderViewRound;
     public HashMap<String , String> gameUsers = new HashMap<>();
     public List<String> gameUserIDS = new ArrayList<>();
@@ -156,6 +157,8 @@ public class GameActivity extends AppCompatActivity {
                     if(!TextUtils.isEmpty(etGuess.getText().toString())) {
                         String sender = getCurrentUser().getUsername();
                         String message = etGuess.getText().toString();
+
+
                         sendMessage(sender,message);
                         etGuess.setText("");
                         handled = true;
@@ -181,6 +184,18 @@ public class GameActivity extends AppCompatActivity {
 
     private void sendMessage(String sender, String message) {
         if(!TextUtils.isEmpty(etGuess.getText().toString())){
+
+            if(!currentWord.isEmpty()){
+                String[] available = splitCurrentWord();
+
+                for(String word : available){
+                    if(etGuess.getText().toString().equals(word)){
+                        sendSystemMessage("YOU GOT IT! The word was: " + available[0]);
+                    }
+                }
+
+            }
+
             Message newMessage = new Message(sender,message);
 
             String msgKey = getCurrentGameReference().
@@ -193,6 +208,12 @@ public class GameActivity extends AppCompatActivity {
         else {
             etGuess.setError("Please Enter Text");
         }
+    }
+
+    private void sendSystemMessage(String message) {
+        Message newMessage = new Message("SYSTEM", message);
+        newMessage.isSystem = true;
+        gmMessagesAdaper.addMessage(newMessage);
     }
 
     private void setUpDrawer(Toolbar toolbar) {
@@ -363,7 +384,6 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Message newMessage = dataSnapshot.getValue(Message.class);
-                Log.d("gamestate", newMessage.getBody());
                 gmMessagesAdaper.addMessage(newMessage);
             }
 
@@ -396,11 +416,12 @@ public class GameActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
                     currentWord = dataSnapshot.getValue(String.class);
-                    String[] available = currentWord.split(",");
+                    String [] available = splitCurrentWord();
 
                     if (getCurrentUser().getUid().equals(currentDrawerID)) {
                         tvWordDraw.setText(available[0]);
                         tvWordDraw.setVisibility(View.VISIBLE);
+                        sendSystemMessage("Its your turn. Your word is: " + available[0]);
                     } else {
                         tvWordDraw.setVisibility(View.INVISIBLE);
                     }
@@ -696,6 +717,10 @@ public class GameActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private String[] splitCurrentWord() {
+        return currentWord.split(",");
     }
 
     public void scrollMessageRecycler(int position){
