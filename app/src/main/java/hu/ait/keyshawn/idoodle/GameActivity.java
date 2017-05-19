@@ -199,7 +199,6 @@ public class GameActivity extends AppCompatActivity {
                         sendSystemMessage("YOU GOT IT! The word was: " + available[0]);
                         addPlayerPoints();
                         shouldSendSystem = true;
-                        break;
                     }
                 }
 
@@ -228,18 +227,18 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 String data = mutableData.getValue(String.class);
+                Log.d("gamestate", data);
                 String[] parsedData = data.split(",");
                 Integer points = Integer.valueOf(parsedData[1]);
                 points += 1;
 
                 mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),points));
 
-                return null;
+                return Transaction.success(mutableData);;
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                Log.d("gamestate", dataSnapshot.getValue(String.class));
             }
         });
     }
@@ -603,7 +602,6 @@ public class GameActivity extends AppCompatActivity {
                 }
                 tvTimer.setTextColor(Color.WHITE);
                 tvTimer.setText(getString(R.string.countdown, millisUntilFinished / 1000));
-                Log.d("gamestate", "" + millisUntilFinished / 1000);
             }
 
             @Override
@@ -614,7 +612,6 @@ public class GameActivity extends AppCompatActivity {
                             child(constants.db_Games_gameState).setValue(newGs);
                 }
 
-                Log.d("gamestate", "STOPPED TIMER");
             }
         }.start();
     }
