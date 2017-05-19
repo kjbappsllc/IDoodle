@@ -49,6 +49,7 @@ import hu.ait.keyshawn.idoodle.View.DrawingView;
 import hu.ait.keyshawn.idoodle.adapter.GameUsersAdapter;
 import hu.ait.keyshawn.idoodle.adapter.MessagesAdapter;
 import hu.ait.keyshawn.idoodle.constants.constants;
+import hu.ait.keyshawn.idoodle.data.Game;
 import hu.ait.keyshawn.idoodle.data.Gamestate;
 import hu.ait.keyshawn.idoodle.data.Message;
 import hu.ait.keyshawn.idoodle.data.User;
@@ -351,13 +352,11 @@ public class GameActivity extends AppCompatActivity {
                                 child(currentGameID).
                                 child(constants.db_Games_hostID).
                                 setValue(newHost);
-                    }
 
-                    if(gameState.equals(Gamestate.GameStateToString(Gamestate.preGamePhase))){
-                        mDatabase.child(constants.db_Games).
-                                child(currentGameID).
-                                child(constants.db_Games_gameState).
-                                setValue(Gamestate.GameStateToString(Gamestate.preGamePhase));
+                        if(newHost.equals(getCurrentUser().getUid())){
+                            btnStart.setVisibility(View.VISIBLE);
+                            tvWaiting.setVisibility(View.GONE);
+                        }
                     }
                 }
                 gmUsersAdapter.removeUser(uID, userInfo);
@@ -530,7 +529,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startDrawingTimer() {
-        drawingTimer = new CountDownTimer(60000, 1000){
+        drawingTimer = new CountDownTimer(10000, 1000){
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -622,7 +621,21 @@ public class GameActivity extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if(dataSnapshot.exists()) {
                         roundNumber = dataSnapshot.getValue(int.class);
-                        tvHeaderViewRound.setText(getString(R.string.round, roundNumber));
+                        if(roundNumber >= 6) {
+                            if(hostUserID.equals(getCurrentUser().getUid())) {
+                                getCurrentGameReference().
+                                        child(constants.db_Games_roundNumber).
+                                        setValue(1);
+
+                                String newGs = Gamestate.GameStateToString(Gamestate.preGamePhase);
+                                getCurrentGameReference().
+                                        child(constants.db_Games_gameState).
+                                        setValue(newGs);
+                            }
+                        }
+                        if(roundNumber < 6) {
+                            tvHeaderViewRound.setText(getString(R.string.round, roundNumber));
+                        }
                     }
                 }
 
@@ -677,7 +690,7 @@ public class GameActivity extends AppCompatActivity {
     private void startRound() {
         String newGs = Gamestate.GameStateToString(Gamestate.drawingPhase);
 
-        if(gameUsers.size() >= 2){
+        if(gameUserIDS.size() >= 2){
             getNewDrawer(newGs);
             btnStart.setVisibility(View.GONE);
             tvWaiting.setVisibility(View.GONE);
@@ -693,12 +706,12 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int roundNumber = dataSnapshot.getValue(int.class);
-                int index = roundNumber-1 % gameUsers.size();
+                int index = roundNumber-1 % gameUserIDS.size();
 
                 String nextUserID = gameUserIDS.get(index);
 
-                mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_currentDrawer).setValue(nextUserID);
-                mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_gameState).setValue(newGs);
+                getCurrentGameReference().child(constants.db_Games_currentDrawer).setValue(nextUserID);
+                getCurrentGameReference().child(constants.db_Games_gameState).setValue(newGs);
             }
 
             @Override
