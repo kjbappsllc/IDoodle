@@ -642,7 +642,7 @@ public class GameActivity extends AppCompatActivity {
                                         child(constants.db_Games_roundNumber).
                                         setValue(1);
 
-                                String newGs = Gamestate.GameStateToString(Gamestate.preGamePhase);
+                                String newGs = Gamestate.GameStateToString(Gamestate.endGamePhase);
                                 getCurrentGameReference().
                                         child(constants.db_Games_gameState).
                                         setValue(newGs);
