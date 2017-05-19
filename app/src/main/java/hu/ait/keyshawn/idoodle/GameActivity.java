@@ -485,12 +485,17 @@ public class GameActivity extends AppCompatActivity {
         stopIntermissionTimer();
         stopDrawingTimer();
         clearUI();
+        tvTimer.setVisibility(View.GONE);
 
         String newGS = Gamestate.GameStateToString(Gamestate.preGamePhase);
 
         getCurrentGameReference().
                 child(constants.db_Games_gameState).
                 setValue(newGS);
+
+        getCurrentGameReference().
+                child(constants.db_Games_currentDrawer).
+                setValue("");
     }
 
     private void doEndRoundPhase() {
@@ -544,7 +549,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startDrawingTimer() {
-        drawingTimer = new CountDownTimer(7000, 1000){
+        drawingTimer = new CountDownTimer(4000, 1000){
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -589,7 +594,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startIntermissionTimer() {
-        intermissionTimer = new CountDownTimer(5000, 1000) {
+        intermissionTimer = new CountDownTimer(2000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 tvTimer.setTextColor(Color.WHITE);
