@@ -519,7 +519,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startDrawingTimer() {
-        drawingTimer = new CountDownTimer(10000, 1000){
+        drawingTimer = new CountDownTimer(60000, 1000){
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -553,8 +553,10 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void setUpNewRound() {
-        getCurrentGameReference().
-                child(constants.db_Games_roundNumber).setValue(roundNumber+1);
+        if(hostUserID.equals(getCurrentUser().getUid())) {
+            getCurrentGameReference().
+                    child(constants.db_Games_roundNumber).setValue(roundNumber + 1);
+        }
 
         clearUI();
 
@@ -562,7 +564,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startIntermissionTimer() {
-        intermissionTimer = new CountDownTimer(9000, 1000) {
+        intermissionTimer = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 tvTimer.setTextColor(Color.WHITE);
@@ -571,7 +573,9 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                startRound();
+                if(hostUserID.equals(getCurrentUser().getUid())) {
+                    startRound();
+                }
             }
         }.start();
     }
@@ -662,7 +666,7 @@ public class GameActivity extends AppCompatActivity {
     private void startRound() {
         String newGs = Gamestate.GameStateToString(Gamestate.drawingPhase);
 
-        if(gameUsers.size() >= 1){
+        if(gameUsers.size() >= 2){
             getNewDrawer(newGs);
             btnStart.setVisibility(View.GONE);
             tvWaiting.setVisibility(View.GONE);
@@ -680,7 +684,7 @@ public class GameActivity extends AppCompatActivity {
                 int roundNumber = dataSnapshot.getValue(int.class);
                 int index = roundNumber % gameUsers.size();
 
-                String nextUserID = gameUserIDS.get(index);
+                String nextUserID = gameUserIDS.get(index-1);
 
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_currentDrawer).setValue(nextUserID);
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_gameState).setValue(newGs);
