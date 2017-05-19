@@ -60,6 +60,7 @@ public class GameActivity extends AppCompatActivity {
     public FloatingActionButton fab;
     public DatabaseReference mDatabase;
     public String currentDrawerID;
+    public String currentGameID;
     public Button btnStart;
     public TextView tvWaiting;
     public EditText etGuess;
@@ -88,6 +89,7 @@ public class GameActivity extends AppCompatActivity {
 
         if(getIntent().hasExtra(LobbyActivity.GAME_NAME)){
             setTitle(getIntent().getStringExtra(LobbyActivity.GAME_NAME));
+            currentGameID = getCurrentUser().getCurrentGameID();
         }
 
         initDB();
@@ -345,8 +347,10 @@ public class GameActivity extends AppCompatActivity {
                     if(!gameUserIDS.isEmpty()) {
                         String newHost = gameUserIDS.get(0);
 
-                        getCurrentGameReference().
-                                child(constants.db_Games_hostID).setValue(newHost);
+                        mDatabase.child(constants.db_Games).
+                                child(currentGameID).
+                                child(constants.db_Games_hostID).
+                                setValue(newHost);
                     }
                 }
                 gmUsersAdapter.removeUser(uID, userInfo);

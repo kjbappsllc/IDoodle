@@ -72,38 +72,14 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
     }
 
     public void setCurrentDrawerID(String currentDrawerID){
-        int indexCurrent = -1;
-        int indexNew;
-
-        if(currentDrawerID != null){
-            indexCurrent = userIDs.indexOf(currentDrawerID);
-        }
-
         this.currentDrawerID = currentDrawerID;
-        indexNew = userIDs.indexOf(currentDrawerID);
-        notifyItemChanged(indexNew);
+        notifyDataSetChanged();
 
-        if(indexCurrent != -1){
-            notifyItemChanged(indexCurrent);
-        }
     }
 
     public void setCurrentHostID(String currentHostID){
-        int indexCurrent = -1;
-        int indexNew;
-
-        if(currentHostID != null){
-            indexCurrent = userIDs.indexOf(currentHostID);
-
-        }
-
         this.currentHostID = currentHostID;
-        indexNew = userIDs.indexOf(currentHostID);
-        notifyItemChanged(indexNew);
-
-        if(indexCurrent != -1){
-            notifyItemChanged(indexCurrent);
-        }
+        notifyDataSetChanged();
     }
 
     public void addUser(String ID, String userInfo){
