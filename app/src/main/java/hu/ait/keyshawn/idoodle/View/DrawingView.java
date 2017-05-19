@@ -148,7 +148,12 @@ public class DrawingView extends View {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                dbRef.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_DrawingURL).setValue(downloadUrl);
+                if(!currentUser.getCurrentGameID().equals("")) {
+                    dbRef.child(constants.db_Games).
+                            child(currentUser.getCurrentGameID()).
+                            child(constants.db_Games_DrawingURL).
+                            setValue(downloadUrl);
+                }
             }
         });
 

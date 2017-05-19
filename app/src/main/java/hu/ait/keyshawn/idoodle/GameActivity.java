@@ -589,7 +589,7 @@ public class GameActivity extends AppCompatActivity {
         tvWaiting.setVisibility(View.GONE);
         tvTimer.setVisibility(View.VISIBLE);
 
-        if(currentDrawerID.equals(getCurrentUser().getUid())) {
+        if(hostUserID.equals(getCurrentUser().getUid())) {
             getNewWord();
         }
 
@@ -631,7 +631,7 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                if(getCurrentUser().getUid().equals(currentDrawerID)) {
+                if(getCurrentUser().getUid().equals(hostUserID)) {
                     String newGs = Gamestate.GameStateToString(Gamestate.endRoundPhase);
                     getCurrentGameReference().
                             child(constants.db_Games_gameState).setValue(newGs);
