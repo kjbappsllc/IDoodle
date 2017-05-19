@@ -682,9 +682,9 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int roundNumber = dataSnapshot.getValue(int.class);
-                int index = roundNumber % gameUsers.size();
+                int index = roundNumber-1 % gameUsers.size();
 
-                String nextUserID = gameUserIDS.get(index-1);
+                String nextUserID = gameUserIDS.get(index);
 
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_currentDrawer).setValue(nextUserID);
                 mDatabase.child(constants.db_Games).child(getCurrentUser().getCurrentGameID()).child(constants.db_Games_gameState).setValue(newGs);
