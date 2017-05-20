@@ -388,7 +388,15 @@ public class GameActivity extends AppCompatActivity {
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 String uID = dataSnapshot.getKey();
                 String userInfo = dataSnapshot.getValue(String.class);
+                String[] data = userInfo.split(",");
                 gmUsersAdapter.updateUser(uID,userInfo);
+
+                if(!getCurrentUser().getUid().equals(uID)) {
+                    Toast.makeText(GameActivity.this, data[0] + "has guessed the word!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(GameActivity.this, "You have guessed the word!", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
