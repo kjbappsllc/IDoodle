@@ -194,7 +194,7 @@ public class GameActivity extends AppCompatActivity {
                 String[] available = splitCurrentWord();
 
                 for(String word : available){
-                    if(etGuess.getText().toString().equals(word)){
+                    if(etGuess.getText().toString().toLowerCase().equals(word)){
                         sendSystemMessage("YOU GOT IT! The word was: " + available[0]);
                         addPlayerPoints();
                         shouldSendSystem = true;
@@ -533,8 +533,52 @@ public class GameActivity extends AppCompatActivity {
         stopDrawingTimer();
         clearUI();
         tvTimer.setVisibility(View.GONE);
-
+        updateAndResetPoints();
         updateGamesPlayedAndResetGame();
+    }
+
+    private void updateAndResetPoints() {
+        getCurrentGameReference().
+                child(constants.db_Games_Userlist).
+                child(getCurrentUser().getUid()).runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                String data = mutableData.getValue(String.class);
+                String[] parsedData = data.split(",");
+
+                updatePointsInDB(Integer.valueOf(parsedData[1]));
+                ((MainApplication)getApplication()).addTotalPoints(Integer.valueOf(parsedData[1]));
+
+                mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),0));
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+            }
+        });
+    }
+
+    private void updatePointsInDB(final int points) {
+        getCurrentCurrentUserReference().
+                child(constants.db_Users_totalPoints).runTransaction(new Transaction.Handler() {
+            @Override
+            public Transaction.Result doTransaction(MutableData mutableData) {
+                Integer current = mutableData.getValue(Integer.class);
+                if(current == null){
+                    mutableData.setValue(1);
+                }
+                else {
+                    mutableData.setValue(current + points);
+                }
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 
     private void updateGamesPlayedAndResetGame() {
@@ -547,8 +591,6 @@ public class GameActivity extends AppCompatActivity {
                     mutableData.setValue(1);
                 } else {
                     mutableData.setValue(currentValue + 1);
-                    User currentUser = getCurrentUser();
-                    currentUser.setGamesPlayed(currentValue + 1);
                     ((MainApplication)getApplication()).addGamePoints();
                 }
                 return Transaction.success(mutableData);

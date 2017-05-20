@@ -11,6 +11,8 @@ public interface constants {
 
     public static final String db_Users_gamesPlayed = "gamesPlayed";
 
+    public static final String db_Users_totalPoints = "totalPointsEarned";
+
     public static final String db_Games = "games";
 
     public static final String db_Games_Userlist = "userList";
