@@ -197,7 +197,6 @@ public class GameActivity extends AppCompatActivity {
                     if(etGuess.getText().toString().equals(word)){
                         sendSystemMessage("YOU GOT IT! The word was: " + available[0]);
                         addPlayerPoints();
-                        addDrawerPoints();
                         shouldSendSystem = true;
                     }
                 }
@@ -239,6 +238,7 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                addDrawerPoints();
             }
         });
     }
@@ -255,7 +255,9 @@ public class GameActivity extends AppCompatActivity {
                 Integer points = Integer.valueOf(parsedData[1]);
                 points += 1;
 
-                mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),points));
+                String username = getCurrentUser().getUsername();
+
+                mutableData.setValue(getString(R.string.userInfo,username,points));
 
                 return Transaction.success(mutableData);
             }
