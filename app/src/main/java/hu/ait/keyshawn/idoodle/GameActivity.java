@@ -226,7 +226,7 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 String data = mutableData.getValue(String.class);
-                Log.d("gamestate", data);
+                Log.d("points", "Player: " + data);
                 String[] parsedData = data.split(",");
                 Integer points = Integer.valueOf(parsedData[1]);
                 points += 1;
@@ -250,14 +250,13 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 String data = mutableData.getValue(String.class);
-                Log.d("gamestate", data);
+                Log.d("points", "Drawer: " + data);
                 String[] parsedData = data.split(",");
                 Integer points = Integer.valueOf(parsedData[1]);
                 points += 1;
 
-                String username = getCurrentUser().getUsername();
 
-                mutableData.setValue(getString(R.string.userInfo,username,points));
+                mutableData.setValue(getString(R.string.userInfo,parsedData[0],points));
 
                 return Transaction.success(mutableData);
             }
