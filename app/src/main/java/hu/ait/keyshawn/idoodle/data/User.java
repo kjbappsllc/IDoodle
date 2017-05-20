@@ -29,6 +29,8 @@ public class User {
         this.gamesPlayed = gamesPlayed;
     }
 
+    public void addGamesPlayed(){ this.gamesPlayed += 1; }
+
     public String getCurrentGameID() {
         return currentGameID;
     }
@@ -59,5 +61,9 @@ public class User {
 
     public void setTotalPointsEarned(int totalPointsEarned) {
         this.totalPointsEarned = totalPointsEarned;
+    }
+
+    public void addTotalPointsEarned(int num){
+        this.totalPointsEarned += num;
     }
 }

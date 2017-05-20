@@ -11,7 +11,14 @@ import hu.ait.keyshawn.idoodle.data.User;
 
 public class MainApplication extends Application {
 
-    User currentUser = new User();
+    private User currentUser;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        currentUser = new User();
+
+    }
 
     public User getCurrentUser() {
         return currentUser;
@@ -20,5 +27,13 @@ public class MainApplication extends Application {
     public void setCurrentUser(User currentUser) {
         this.currentUser = currentUser;
         Log.d("user", currentUser.getUid());
+    }
+
+    public void addGamePoints() {
+        currentUser.addGamesPlayed();
+    }
+
+    public void addTotalPoints(int points){
+        currentUser.addTotalPointsEarned(points);
     }
 }

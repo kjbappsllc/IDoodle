@@ -401,6 +401,7 @@ public class GameActivity extends AppCompatActivity {
                 gameUsers.remove(index);
 
                 if(uID.equals(hostUserID)) {
+                    Toast.makeText(GameActivity.this, "HOST HAS LEFT THE GAME", Toast.LENGTH_LONG).show();
                     leaveGame();
                     finish();
                 }
@@ -512,6 +513,7 @@ public class GameActivity extends AppCompatActivity {
                         case endRoundPhase:
                             doEndRoundPhase();
                             break;
+
                         case endGamePhase:
                             doEndGamePhase();
                             break;
@@ -545,14 +547,15 @@ public class GameActivity extends AppCompatActivity {
                     mutableData.setValue(1);
                 } else {
                     mutableData.setValue(currentValue + 1);
+                    User currentUser = getCurrentUser();
+                    currentUser.setGamesPlayed(currentValue + 1);
+                    ((MainApplication)getApplication()).addGamePoints();
                 }
                 return Transaction.success(mutableData);
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                User currentUser = getCurrentUser();
-                currentUser.setGamesPlayed(dataSnapshot.getValue(Integer.class));
                 if(hostUserID.equals(getCurrentUser().getUid())){
                     String newGS = Gamestate.GameStateToString(Gamestate.preGamePhase);
 
