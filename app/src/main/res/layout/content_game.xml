@@ -80,7 +80,7 @@
         <EditText
             android:id="@+id/etGuess"
             android:layout_width="match_parent"
-            android:hint="Guess"
+            android:hint="@string/guess"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:imeOptions="actionDone"

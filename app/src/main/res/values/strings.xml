@@ -31,10 +31,21 @@
     <string name="userInfo">%1$s,%2$d</string>
     <string name="username">Username</string>
     <string name="round">Round: %1$d</string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading</string>
     <string name="countdown">%1$dsecs</string>
     <string name="countdownIntermission">Next round in %1$dsecs..</string>
 
     <!-- Strings related to inGame Messaging -->
     <string name="msgSender">%1$s:  %2$s</string>
+    <string name="roundplaceholder">Round:</string>
+    <string name="usersplaceholder">Users:</string>
+    <string name="games_name_placeholder">Games Name</string>
+    <string name="games_played">Games Played</string>
+    <string name="total_points">Total Points</string>
+    <string name="gamesplayedPlaceholdernumber">0</string>
+    <string name="totalpointsplaceholdernumber">0</string>
+    <string name="username_goes_here">Username goes here</string>
+    <string name="guess">Guess</string>
+    <string name="start_game">Start Game</string>
+    <string name="waiting_for_host">Waiting for Host</string>
 </resources>

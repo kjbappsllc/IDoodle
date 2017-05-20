@@ -15,7 +15,7 @@
         android:paddingTop="10dp"
         android:textColor="#FFF"
         android:textStyle="bold|italic"
-        android:text="Username goes here"
+        android:text="@string/username_goes_here"
         android:textSize="35sp" />
 
     <TextView
@@ -24,7 +24,7 @@
         android:textSize="22sp"
         android:textColor="#FFF"
         android:layout_marginTop="20dp"
-        android:text="Games Played" />
+        android:text="@string/games_played" />
 
     <TextView
         android:id="@+id/tvGamesPlayed"
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:text="0" />
+        android:text="@string/gamesplayedPlaceholdernumber" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
         android:textSize="22sp"
         android:textColor="#FFF"
         android:layout_marginTop="20dp"
-        android:text="Total Points" />
+        android:text="@string/total_points" />
 
     <TextView
         android:id="@+id/tvTotalPoints"
@@ -48,6 +48,6 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:textColor="#FFF"
-        android:text="0" />
+        android:text="@string/totalpointsplaceholdernumber" />
 
 </LinearLayout>
