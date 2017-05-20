@@ -392,9 +392,9 @@ public class GameActivity extends AppCompatActivity {
                 gmUsersAdapter.updateUser(uID,userInfo);
 
                 if(!getCurrentUser().getUid().equals(uID)) {
-                    Toast.makeText(GameActivity.this, data[0] + "has guessed the word!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(GameActivity.this, data[0] + " has guessed the word!", Toast.LENGTH_SHORT).show();
                 }
-                else {
+                else if(!currentDrawerID.equals(getCurrentUser().getUid())) {
                     Toast.makeText(GameActivity.this, "You have guessed the word!", Toast.LENGTH_SHORT).show();
                 }
             }
