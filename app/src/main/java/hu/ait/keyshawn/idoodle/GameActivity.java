@@ -124,7 +124,7 @@ public class GameActivity extends AppCompatActivity {
     }
     public DatabaseReference getCurrentGameReference() {return mDatabase.child(constants.db_Games).
             child(getCurrentUser().getCurrentGameID());}
-    public DatabaseReference getCurrentCurrentUserReference() {return mDatabase.child(constants.db_Users).
+    public DatabaseReference getCurrentUserReference() {return mDatabase.child(constants.db_Users).
             child(getCurrentUser().getUid());}
 
 
@@ -534,7 +534,6 @@ public class GameActivity extends AppCompatActivity {
         clearUI();
         tvTimer.setVisibility(View.GONE);
         updateAndResetPoints();
-        updateGamesPlayedAndResetGame();
     }
 
     private void updateAndResetPoints() {
@@ -555,12 +554,13 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
+                updateGamesPlayedAndResetGame();
             }
         });
     }
 
     private void updatePointsInDB(final int points) {
-        getCurrentCurrentUserReference().
+        getCurrentUserReference().
                 child(constants.db_Users_totalPoints).runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
@@ -582,7 +582,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void updateGamesPlayedAndResetGame() {
-        getCurrentCurrentUserReference().
+        getCurrentUserReference().
                 child(constants.db_Users_gamesPlayed).runTransaction(new Transaction.Handler() {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
