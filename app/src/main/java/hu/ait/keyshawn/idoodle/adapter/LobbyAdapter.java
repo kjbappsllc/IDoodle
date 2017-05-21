@@ -50,11 +50,8 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.tvGameName.setText(gameList.get(position).getGameName());
         holder.tvRound.setText(context.getString(R.string.RoundNumber, gameList.get(position).getRoundNumber()));
-        if (gameList.get(position).getUserList() == null){
+        if (gameList.get(position).getUserList().size() == 0){
             Log.d("gametest", "UserListEmpty");
-            String gameToRemove = gameList.get(position).getUid();
-
-            mDatabase.child(constants.db_Games).child(gameToRemove).removeValue();
 
         }
         else {
@@ -95,6 +92,10 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
 
     public void updateGame(String id, Game updated) {
         int index = gameIDs.indexOf(id);
+
+        if(updated.getUserList().size() == 0) {
+            Log.d("gameTest", "Game is Empty");
+        }
 
         if(index != -1) {
             gameList.set(index, updated);
