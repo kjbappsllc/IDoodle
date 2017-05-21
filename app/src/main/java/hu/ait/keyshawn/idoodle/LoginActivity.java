@@ -109,7 +109,7 @@ public class LoginActivity extends AppCompatActivity{
 
     private void hideProgressDialog(){
         if(progressDialog != null && progressDialog.isShowing()){
-            progressDialog.hide();
+            progressDialog.dismiss();
         }
     }
 
@@ -196,7 +196,6 @@ public class LoginActivity extends AppCompatActivity{
                 ((MainApplication)getApplication()).setCurrentUser(currentUser);
 
                 hideProgressDialog();
-                //startActivity(new Intent(LoginActivity.this, GameActivity.class));
                 startActivity(new Intent(LoginActivity.this, LobbyActivity.class));
             }
 

@@ -90,15 +90,16 @@ public class GameActivity extends AppCompatActivity {
 
         FirebaseGameHandler firebaseGameHandler = new FirebaseGameHandler(this);
 
-        initUI();
         firebaseGameHandler.initGameHostIDEventListener(currentGame,gmUsersAdapter);
         firebaseGameHandler.initGameUserListEventListener(currentGame,gmUsersAdapter,gameUserIDS);
-        firebaseGameHandler.initGameStateEventListener(currentGame);
-        firebaseGameHandler.initGameDrawingEventListener(currentGame,ivProjectedCanvas);
         firebaseGameHandler.initCurrentDrawerEventListener(currentGame,gmUsersAdapter);
+        firebaseGameHandler.initGameDrawingEventListener(currentGame,ivProjectedCanvas);
+        firebaseGameHandler.initGameStateEventListener(currentGame);
         firebaseGameHandler.initRoundNumberEventListener(currentGame);
         firebaseGameHandler.initMessageEventListener(gmMessagesAdaper);
         firebaseGameHandler.initCurrentWordListener(currentGame);
+
+        initUI();
     }
 
 
@@ -304,7 +305,9 @@ public class GameActivity extends AppCompatActivity {
 
     public void doEndGamePhase() {
         stopIntermissionTimer();
+        intermissionTimer = null;
         stopDrawingTimer();
+        drawingTimer = null;
         clearUI();
         tvTimer.setVisibility(View.GONE);
         updateAndResetPoints();
@@ -319,8 +322,12 @@ public class GameActivity extends AppCompatActivity {
                 String data = mutableData.getValue(String.class);
                 String[] parsedData = data.split(",");
 
-                updatePointsInDB(Integer.valueOf(parsedData[1]));
-                ((MainApplication)getApplication()).addTotalPoints(Integer.valueOf(parsedData[1]));
+                if(currentGame.getRoundNumber() >= 5) {
+                    updatePointsInDB(Integer.valueOf(parsedData[1]));
+
+                    ((MainApplication) getApplication()).
+                            addTotalPoints(Integer.valueOf(parsedData[1]));
+                }
 
                 mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),0));
                 return Transaction.success(mutableData);
@@ -361,11 +368,14 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 Integer currentValue = mutableData.getValue(Integer.class);
-                if (currentValue == null) {
-                    mutableData.setValue(1);
-                } else {
-                    mutableData.setValue(currentValue + 1);
-                    ((MainApplication)getApplication()).addGamePoints();
+
+                if(currentGame.getRoundNumber() >= 5) {
+                    if (currentValue == null) {
+                        mutableData.setValue(1);
+                    } else {
+                        mutableData.setValue(currentValue + 1);
+                        ((MainApplication) getApplication()).addGamePoints();
+                    }
                 }
                 return Transaction.success(mutableData);
             }
@@ -439,29 +449,32 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startDrawingTimer() {
-        drawingTimer = new CountDownTimer(40000, 1000){
+        Log.d("DEBUGGAME", "startedTimerDrawTimer");
+        if(drawingTimer == null) {
+            drawingTimer = new CountDownTimer(40000, 1000) {
 
-            @Override
-            public void onTick(long millisUntilFinished) {
-                if((millisUntilFinished / 1000) < 11){
-                    tvTimer.setTextColor(Color.RED);
-                } else {
-                    tvTimer.setTextColor(Color.WHITE);
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    if ((millisUntilFinished / 1000) < 11) {
+                        tvTimer.setTextColor(Color.RED);
+                    } else {
+                        tvTimer.setTextColor(Color.WHITE);
+                    }
+
+                    tvTimer.setText(getString(R.string.countdown, millisUntilFinished / 1000));
                 }
 
-                tvTimer.setText(getString(R.string.countdown, millisUntilFinished / 1000));
-            }
+                @Override
+                public void onFinish() {
+                    if (getCurrentUser().getUid().equals(currentGame.getHostUserID())) {
+                        String newGs = Gamestate.GameStateToString(Gamestate.endRoundPhase);
+                        getCurrentGameReference().
+                                child(constants.db_Games_gameState).setValue(newGs);
+                    }
 
-            @Override
-            public void onFinish() {
-                if(getCurrentUser().getUid().equals(currentGame.getHostUserID())) {
-                    String newGs = Gamestate.GameStateToString(Gamestate.endRoundPhase);
-                    getCurrentGameReference().
-                            child(constants.db_Games_gameState).setValue(newGs);
                 }
-
-            }
-        }.start();
+            }.start();
+        }
     }
 
     private void stopDrawingTimer() {
@@ -473,6 +486,8 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void setUpNewRound() {
+        drawingTimer = null;
+        intermissionTimer = null;
         if(currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
             getCurrentGameReference().
                     child(constants.db_Games_roundNumber).setValue(currentGame.getRoundNumber() + 1);
@@ -484,20 +499,23 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void startIntermissionTimer() {
-        intermissionTimer = new CountDownTimer(10000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                tvTimer.setTextColor(Color.WHITE);
-                tvTimer.setText(getString(R.string.countdownIntermission, millisUntilFinished / 1000));
-            }
-
-            @Override
-            public void onFinish() {
-                if(currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
-                    startRound();
+        Log.d("DEBUGGAME", "startedTimerIntTimer");
+        if(intermissionTimer == null) {
+            intermissionTimer = new CountDownTimer(10000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    tvTimer.setTextColor(Color.WHITE);
+                    tvTimer.setText(getString(R.string.countdownIntermission, millisUntilFinished / 1000));
                 }
-            }
-        }.start();
+
+                @Override
+                public void onFinish() {
+                    if (currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
+                        startRound();
+                    }
+                }
+            }.start();
+        }
     }
 
     private void clearUI() {
@@ -530,12 +548,13 @@ public class GameActivity extends AppCompatActivity {
     public void leaveGame() {
         if(drawingTimer != null) {
             stopDrawingTimer();
+            drawingTimer = null;
         }
 
         if(intermissionTimer != null) {
             stopIntermissionTimer();
+            intermissionTimer = null;
         }
-
         getCurrentGameReference().
                 child(constants.db_Games_Userlist).
                 child(getCurrentUser().getUid()).removeValue();
@@ -569,7 +588,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void startRound() {
         String newGs = Gamestate.GameStateToString(Gamestate.drawingPhase);
-
+        intermissionTimer = null;
         if(gameUserIDS.size() >= 2){
             getNewDrawer(newGs);
             btnStart.setVisibility(View.GONE);
@@ -577,6 +596,9 @@ public class GameActivity extends AppCompatActivity {
             tvTimer.setVisibility(View.VISIBLE);
         }
         else {
+            newGs = Gamestate.GameStateToString(Gamestate.endRoundPhase);
+            getCurrentGameReference().
+                    child(constants.db_Games_gameState).setValue(newGs);
             Toast.makeText(this, "Need at least 2 Players to Start Round", Toast.LENGTH_SHORT).show();
         }
     }

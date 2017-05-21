@@ -188,15 +188,17 @@ public class DrawingView extends View {
     }
 
     private void touch_up() {
-        if(((GameActivity)context).currentGame.getGameState().
-                equals(Gamestate.GameStateToString(Gamestate.drawingPhase))) {
-            mPath.lineTo(mX, mY);
-            circlePath.reset();
-            mCanvas.drawPath(mPath, mPaint);
-        }
+        if(((GameActivity)context).currentGame != null) {
+            if (((GameActivity) context).currentGame.getGameState().
+                    equals(Gamestate.GameStateToString(Gamestate.drawingPhase))) {
+                mPath.lineTo(mX, mY);
+                circlePath.reset();
+                mCanvas.drawPath(mPath, mPaint);
+            }
 
-        mPath.reset();
-        saveDrawing();
+            mPath.reset();
+            saveDrawing();
+        }
     }
 
     @Override
