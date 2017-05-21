@@ -528,7 +528,10 @@ public class GameActivity extends AppCompatActivity {
     private void clearUI() {
         if(currentGame.getCurrentDrawer().equals(getCurrentUser().getUid())) {
             dvMain.clearDrawing();
+            Log.d("drawing", "Attempting to clear");
         }
+
+        Log.d("drawing", "Attempting to clear UI");
 
         clearMessages();
         dvMain.setVisibility(View.GONE);
@@ -536,8 +539,6 @@ public class GameActivity extends AppCompatActivity {
         fab.setVisibility(View.GONE);
         tvWordDraw.setVisibility(View.INVISIBLE);
 
-        getCurrentGameReference().
-                child(constants.db_Games_DrawingURL).setValue("");
         ivProjectedCanvas.setImageBitmap(null);
         etGuess.setVisibility(View.VISIBLE);
         etGuess.setText("");

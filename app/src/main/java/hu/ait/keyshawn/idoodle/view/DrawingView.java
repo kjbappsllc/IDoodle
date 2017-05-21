@@ -118,7 +118,7 @@ public class DrawingView extends View {
 
     public void saveDrawing()
     {
-
+        Log.d("drawing", "Save Drawing Attempted");
         mStorageRef = FirebaseStorage.getInstance().getReference();
         dbRef = FirebaseDatabase.getInstance().getReference();
 
@@ -145,11 +145,14 @@ public class DrawingView extends View {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 String downloadUrl = taskSnapshot.getDownloadUrl().toString();
-                if(!currentUser.getCurrentGameID().equals("")) {
+                if(!currentUser.getCurrentGameID().equals("") &&
+                        ((GameActivity)context).currentGame.getCurrentDrawer().equals(currentUser.getUid())) {
+
                     dbRef.child(constants.db_Games).
                             child(currentUser.getCurrentGameID()).
                             child(constants.db_Games_DrawingURL).
                             setValue(downloadUrl);
+                    Log.d("drawing", "Adding Drawing URL");
                 }
             }
         });
@@ -197,7 +200,10 @@ public class DrawingView extends View {
             }
 
             mPath.reset();
-            saveDrawing();
+
+            if(!((GameActivity) context).getCurrentUser().getCurrentGameID().equals("")) {
+                saveDrawing();
+            }
         }
     }
 
