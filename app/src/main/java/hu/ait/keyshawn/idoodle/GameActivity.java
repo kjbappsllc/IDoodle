@@ -563,6 +563,10 @@ public class GameActivity extends AppCompatActivity {
                     child(getCurrentUser().getUid()).
                     child("currentGameID").setValue("");
 
+            getCurrentGameReference().
+                    child(constants.db_Games_Userlist).
+                    child(getCurrentUser().getUid()).removeValue();
+
             User currentUser = getCurrentUser();
             currentUser.setCurrentGameID("");
             ((MainApplication) getApplication()).setCurrentUser(currentUser);
