@@ -22,9 +22,12 @@ import com.kekstudio.dachshundtablayout.DachshundTabLayout;
 import com.kekstudio.dachshundtablayout.indicators.DachshundIndicator;
 import com.kekstudio.dachshundtablayout.indicators.LineMoveIndicator;
 
+import org.greenrobot.eventbus.EventBus;
+
 import hu.ait.keyshawn.idoodle.adapter.LobbyAdapter;
 import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.Game;
+import hu.ait.keyshawn.idoodle.data.Gamestate;
 import hu.ait.keyshawn.idoodle.data.User;
 import hu.ait.keyshawn.idoodle.pager.FragmentPager;
 
@@ -124,6 +127,8 @@ public class LobbyActivity extends AppCompatActivity {
         String gameKey = mDatabase.child(constants.db_Games).push().getKey();
 
         Game newGame = new Game(gameKey, gameName);
+        newGame.setGameState(Gamestate.GameStateToString(Gamestate.preGamePhase));
+        EventBus.getDefault().post(newGame);
         mDatabase.child(constants.db_Games).child(gameKey).setValue(newGame);
 
         User currentUser = getCurrentUser();
@@ -143,19 +148,19 @@ public class LobbyActivity extends AppCompatActivity {
         }
     }
 
-    public void initJoinGameDB(String gameID, String gameName) {
+    public void initJoinGameDB(Game newGame, String gameName) {
         Resources res = getResources();
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
+        EventBus.getDefault().post(newGame);
         User currentUser = getCurrentUser();
 
         if(currentUser != null) {
-            currentUser.setCurrentGameID(gameID);
+            currentUser.setCurrentGameID(newGame.getUid());
             mDatabase.child(constants.db_Users).child(currentUser.getUid()).
-            child(constants.db_Users_currentGameID).setValue(gameID);
+            child(constants.db_Users_currentGameID).setValue(newGame.getUid());
 
             mDatabase.child(constants.db_Games).
-                    child(gameID).child(constants.db_Games_Userlist).
+                    child(newGame.getUid()).child(constants.db_Games_Userlist).
                     child(currentUser.getUid()).
                     setValue(res.getString(R.string.userInfo, getCurrentUser().getUsername(), 0));
 

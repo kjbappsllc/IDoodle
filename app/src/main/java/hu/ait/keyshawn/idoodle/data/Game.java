@@ -27,7 +27,7 @@ public class Game {
         this.userList = new HashMap<>();
         this.hostUserID = "";
         this.messageList = new ArrayList<>();
-        this.gameState = saveGameState(Gamestate.preGamePhase);
+        this.gameState = "";
     }
 
     public Game() {}

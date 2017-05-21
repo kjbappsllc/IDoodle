@@ -52,7 +52,7 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((LobbyActivity)context).initJoinGameDB(gameIDs.get(position), holder.tvGameName.getText().toString());
+                ((LobbyActivity)context).initJoinGameDB(gameList.get(position), holder.tvGameName.getText().toString());
             }
         });
     }
