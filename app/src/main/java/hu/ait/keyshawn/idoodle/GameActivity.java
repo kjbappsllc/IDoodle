@@ -516,7 +516,10 @@ public class GameActivity extends AppCompatActivity {
         stopDrawingTimer();
         drawingTimer = null;
         String[] available = splitCurrentWord();
-        sendGlobalMessage("SYSTEM", "Word was: " + available[0]);
+
+        if(currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
+            sendGlobalMessage("SYSTEM", "Word was: " + available[0]);
+        }
         if (intermissionTimer == null) {
             intermissionTimer = new CountDownTimer(10000, 1000) {
                 @Override
