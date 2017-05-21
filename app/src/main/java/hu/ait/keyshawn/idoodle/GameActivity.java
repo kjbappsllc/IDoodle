@@ -595,7 +595,7 @@ public class GameActivity extends AppCompatActivity {
             tvTimer.setVisibility(View.VISIBLE);
         }
         else {
-            newGs = Gamestate.GameStateToString(Gamestate.endRoundPhase);
+            newGs = Gamestate.GameStateToString(Gamestate.endGamePhase);
             getCurrentGameReference().
                     child(constants.db_Games_gameState).setValue(newGs);
             Toast.makeText(this, "Need at least 2 Players to Start Round", Toast.LENGTH_SHORT).show();
