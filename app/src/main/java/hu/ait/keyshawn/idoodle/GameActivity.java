@@ -90,6 +90,7 @@ public class GameActivity extends AppCompatActivity {
 
         FirebaseGameHandler firebaseGameHandler = new FirebaseGameHandler(this);
 
+        initUI();
         firebaseGameHandler.initGameHostIDEventListener(currentGame,gmUsersAdapter);
         firebaseGameHandler.initGameUserListEventListener(currentGame,gmUsersAdapter,gameUserIDS);
         firebaseGameHandler.initCurrentDrawerEventListener(currentGame,gmUsersAdapter);
@@ -98,8 +99,6 @@ public class GameActivity extends AppCompatActivity {
         firebaseGameHandler.initRoundNumberEventListener(currentGame);
         firebaseGameHandler.initMessageEventListener(gmMessagesAdaper);
         firebaseGameHandler.initCurrentWordListener(currentGame);
-
-        initUI();
     }
 
 
