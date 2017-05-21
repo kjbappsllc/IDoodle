@@ -517,7 +517,7 @@ public class GameActivity extends AppCompatActivity {
         drawingTimer = null;
         String[] available = splitCurrentWord();
 
-        if(currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
+        if(!currentGame.getCurrentDrawer().equals(getCurrentUser().getUid())) {
             sendGlobalMessage("SYSTEM", "Word was: " + available[0]);
         }
         if (intermissionTimer == null) {

@@ -164,7 +164,9 @@ public class FirebaseGameHandler {
         Log.d("greattest", uID);
 
         if(uID.equals(game.getHostUserID())) {
-            Toast.makeText(context, "HOST HAS LEFT THE GAME", Toast.LENGTH_LONG).show();
+            if(!getCurrentUser().getCurrentGameID().equals("")) {
+                Toast.makeText(context, "HOST HAS LEFT THE GAME", Toast.LENGTH_LONG).show();
+            }
 
             if(!getCurrentUser().getUid().equals(uID)){
                 ((GameActivity) context).leaveGame();
