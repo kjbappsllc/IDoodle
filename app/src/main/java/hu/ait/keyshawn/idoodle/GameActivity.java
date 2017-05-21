@@ -471,6 +471,8 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public void onFinish() {
                     if (getCurrentUser().getUid().equals(currentGame.getHostUserID())) {
+                        String[] available = splitCurrentWord();
+                        sendMessage("SYSTEM", "The correct word was: " + available[0]);
                         String newGs = Gamestate.GameStateToString(Gamestate.endRoundPhase);
                         getCurrentGameReference().
                                 child(constants.db_Games_gameState).setValue(newGs);
@@ -556,6 +558,16 @@ public class GameActivity extends AppCompatActivity {
 
     public void leaveGame() {
         if(getCurrentUser().getUid().equals(currentGame.getHostUserID())){
+            if (drawingTimer != null) {
+                stopDrawingTimer();
+                drawingTimer = null;
+            }
+
+            if (intermissionTimer != null) {
+                stopIntermissionTimer();
+                intermissionTimer = null;
+            }
+
             Log.d("greattest", "Is Host User");
 
             getCurrentGameReference().
