@@ -671,9 +671,9 @@ public class GameActivity extends AppCompatActivity {
     private void getNewWord() {
 
         Random randomGen = new Random();
-        int num = randomGen.nextInt(36) + 1;
+        int num = randomGen.nextInt(38) + 1;
         while (playedWords.contains(num)) {
-            num = randomGen.nextInt(36) + 1;
+            num = randomGen.nextInt(38) + 1;
         }
 
         playedWords.add(num);
