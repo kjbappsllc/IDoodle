@@ -35,6 +35,15 @@ import static hu.ait.keyshawn.idoodle.R.id.tvWordDraw;
 public class FirebaseGameHandler {
     private Context context;
     private DatabaseReference mDatabase;
+    private ValueEventListener gameHostEventListener;
+    private ValueEventListener drawingEventListener;
+    private ChildEventListener gameUserListChildListener;
+    private ValueEventListener currentDrawerEventListener;
+    private ValueEventListener gameStateEventListener;
+    private ValueEventListener roundNumberEventListener;
+    private ChildEventListener messageEventListener;
+    private ValueEventListener currentWordEventListener;
+
 
     public FirebaseGameHandler(Context context) {
         this.context = context;
@@ -48,9 +57,7 @@ public class FirebaseGameHandler {
 
     public void initGameHostIDEventListener(final Game game,
                                             final GameUsersAdapter gmAdapter) {
-        getCurrentGameReference().
-                child(constants.db_Games_hostID).
-                addValueEventListener(new ValueEventListener() {
+        gameHostEventListener = new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -59,14 +66,17 @@ public class FirebaseGameHandler {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
-        });
+        };
+
+        getCurrentGameReference().
+                child(constants.db_Games_hostID).
+                addValueEventListener(gameHostEventListener);
     }
 
     public void initGameDrawingEventListener(final Game game,
                                            final ImageView ivProjectedCanvas) {
-        getCurrentGameReference().
-                child(constants.db_Games_DrawingURL).
-                addValueEventListener(new ValueEventListener() {
+
+        drawingEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String currentGameURL = dataSnapshot.getValue(String.class);
@@ -74,7 +84,11 @@ public class FirebaseGameHandler {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
-        });
+        };
+
+        getCurrentGameReference().
+                child(constants.db_Games_DrawingURL).
+                addValueEventListener(drawingEventListener);
     }
 
     private void loadImageWithGlide(String currentGameURL,
@@ -110,9 +124,8 @@ public class FirebaseGameHandler {
     public void initGameUserListEventListener(final Game game,
                                               final GameUsersAdapter gmAdapter,
                                               final List<String> gameUserIDS) {
-        getCurrentGameReference().
-                child(constants.db_Games_Userlist).
-                addChildEventListener(new ChildEventListener() {
+
+        gameUserListChildListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 handleAddedUser(dataSnapshot, gameUserIDS, gmAdapter);
@@ -129,7 +142,11 @@ public class FirebaseGameHandler {
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
             @Override
             public void onCancelled(DatabaseError databaseError) {}
-        });
+        };
+
+        getCurrentGameReference().
+                child(constants.db_Games_Userlist).
+                addChildEventListener(gameUserListChildListener);
     }
 
     private void handleUserLeaving(DataSnapshot dataSnapshot,
@@ -184,9 +201,8 @@ public class FirebaseGameHandler {
 
     public void initCurrentDrawerEventListener(final Game game,
                                                final GameUsersAdapter gmAdapter) {
-        getCurrentGameReference().
-                child(constants.db_Games_currentDrawer).
-                addValueEventListener(new ValueEventListener() {
+
+        currentDrawerEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 game.setCurrentDrawer(dataSnapshot.getValue(String.class));
@@ -194,13 +210,16 @@ public class FirebaseGameHandler {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
-        });
+        };
+
+        getCurrentGameReference().
+                child(constants.db_Games_currentDrawer).
+                addValueEventListener(currentDrawerEventListener);
     }
 
     public void initGameStateEventListener(final Game game) {
-        getCurrentGameReference()
-                .child(constants.db_Games_gameState).
-                addValueEventListener(new ValueEventListener() {
+
+        gameStateEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 game.setGameState(dataSnapshot.getValue(String.class));
@@ -208,7 +227,11 @@ public class FirebaseGameHandler {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
-        });
+        };
+
+        getCurrentGameReference()
+                .child(constants.db_Games_gameState).
+                addValueEventListener(gameStateEventListener);
     }
 
     private void handleGameStateLogic(Game game) {
@@ -233,17 +256,20 @@ public class FirebaseGameHandler {
     }
 
     public void initRoundNumberEventListener(final Game game) {
+
+        roundNumberEventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                handleRoundChange(dataSnapshot, game);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        };
+
         if(!getCurrentUser().getCurrentGameID().isEmpty()) {
             getCurrentGameReference().
                     child(constants.db_Games_roundNumber).
-                    addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    handleRoundChange(dataSnapshot, game);
-                }
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            });
+                    addValueEventListener(roundNumberEventListener);
         }
     }
 
@@ -269,9 +295,8 @@ public class FirebaseGameHandler {
     }
 
     public void initMessageEventListener(final MessagesAdapter mAdapter) {
-        getCurrentGameReference().
-                child(constants.db_Games_messages).
-                addChildEventListener(new ChildEventListener() {
+
+        messageEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Message newMessage = dataSnapshot.getValue(Message.class);
@@ -285,12 +310,15 @@ public class FirebaseGameHandler {
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
             @Override
             public void onCancelled(DatabaseError databaseError) {}
-        });
+        };
+
+        getCurrentGameReference().
+                child(constants.db_Games_messages).
+                addChildEventListener(messageEventListener);
     }
 
     public void initCurrentWordListener(final Game game) {
-        getCurrentGameReference().
-                child(constants.db_Games_currentWord).addValueEventListener(new ValueEventListener() {
+        currentWordEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
@@ -301,7 +329,44 @@ public class FirebaseGameHandler {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {}
-        });
+        };
+        getCurrentGameReference().
+                child(constants.db_Games_currentWord).
+                addValueEventListener(currentWordEventListener);
+    }
+
+    public void deinit() {
+        getCurrentGameReference().
+                child(constants.db_Games_hostID).
+                removeEventListener(gameHostEventListener);
+
+        getCurrentGameReference().
+                child(constants.db_Games_DrawingURL).
+                removeEventListener(drawingEventListener);
+
+        getCurrentGameReference().
+                child(constants.db_Games_Userlist).
+                removeEventListener(gameUserListChildListener);
+
+        getCurrentGameReference().
+                child(constants.db_Games_currentDrawer).
+                removeEventListener(currentDrawerEventListener);
+
+        getCurrentGameReference()
+                .child(constants.db_Games_gameState).
+                removeEventListener(gameStateEventListener);
+
+        getCurrentGameReference().
+                child(constants.db_Games_roundNumber).
+                removeEventListener(roundNumberEventListener);
+
+        getCurrentGameReference().
+                child(constants.db_Games_messages).
+                removeEventListener(messageEventListener);
+
+        getCurrentGameReference().
+                child(constants.db_Games_currentWord).
+                removeEventListener(currentWordEventListener);
     }
 
 }

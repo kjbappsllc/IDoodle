@@ -79,6 +79,7 @@ public class GameActivity extends AppCompatActivity {
     public TextView tvHeaderViewRound;
     public List<String> gameUserIDS = new ArrayList<>();
     public Game currentGame;
+    FirebaseGameHandler firebaseGameHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +93,7 @@ public class GameActivity extends AppCompatActivity {
         }
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        FirebaseGameHandler firebaseGameHandler = new FirebaseGameHandler(this);
+        firebaseGameHandler = new FirebaseGameHandler(this);
 
         initUI();
         firebaseGameHandler.initGameHostIDEventListener(currentGame,gmUsersAdapter);
@@ -574,6 +575,8 @@ public class GameActivity extends AppCompatActivity {
         User currentUser = getCurrentUser();
         currentUser.setCurrentGameID("");
         ((MainApplication)getApplication()).setCurrentUser(currentUser);
+
+        firebaseGameHandler.deinit();
     }
 
     @Override
