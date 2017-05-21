@@ -161,7 +161,11 @@ public class FirebaseGameHandler {
 
         if(uID.equals(game.getHostUserID())) {
             Toast.makeText(context, "HOST HAS LEFT THE GAME", Toast.LENGTH_LONG).show();
-            ((GameActivity)context).leaveGame();
+
+            if(!getCurrentUser().getUid().equals(uID)){
+                ((GameActivity)context).leaveGame();
+            }
+
             ((GameActivity)context).removeFromBackstack();
         }
         gmAdapter.removeUser(uID, userInfo);

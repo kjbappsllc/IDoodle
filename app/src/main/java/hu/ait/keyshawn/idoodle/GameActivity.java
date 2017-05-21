@@ -555,28 +555,44 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void leaveGame() {
-        if(drawingTimer != null) {
-            stopDrawingTimer();
-            drawingTimer = null;
+        if(getCurrentUser().getUid().equals(currentGame.getHostUserID())){
+            Log.d("greattest", "Is Host User");
+            getCurrentGameReference().removeValue();
+
+            mDatabase.child(constants.db_Users).
+                    child(getCurrentUser().getUid()).
+                    child("currentGameID").setValue("");
+
+            User currentUser = getCurrentUser();
+            currentUser.setCurrentGameID("");
+            ((MainApplication) getApplication()).setCurrentUser(currentUser);
+
+        } else {
+
+            if (drawingTimer != null) {
+                stopDrawingTimer();
+                drawingTimer = null;
+            }
+
+            if (intermissionTimer != null) {
+                stopIntermissionTimer();
+                intermissionTimer = null;
+            }
+
+            getCurrentGameReference().
+                    child(constants.db_Games_Userlist).
+                    child(getCurrentUser().getUid()).removeValue();
+
+            mDatabase.child(constants.db_Users).
+                    child(getCurrentUser().getUid()).
+                    child("currentGameID").setValue("");
+
+            User currentUser = getCurrentUser();
+            currentUser.setCurrentGameID("");
+            ((MainApplication) getApplication()).setCurrentUser(currentUser);
+
+            firebaseGameHandler.deinit();
         }
-
-        if(intermissionTimer != null) {
-            stopIntermissionTimer();
-            intermissionTimer = null;
-        }
-        getCurrentGameReference().
-                child(constants.db_Games_Userlist).
-                child(getCurrentUser().getUid()).removeValue();
-
-        mDatabase.child(constants.db_Users).
-                child(getCurrentUser().getUid()).
-                child("currentGameID").setValue("");
-
-        User currentUser = getCurrentUser();
-        currentUser.setCurrentGameID("");
-        ((MainApplication)getApplication()).setCurrentUser(currentUser);
-
-        firebaseGameHandler.deinit();
     }
 
     @Override
@@ -585,16 +601,9 @@ public class GameActivity extends AppCompatActivity {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            leaveGame();
             super.onBackPressed();
+            leaveGame();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        leaveGame();
-        finish();
-        super.onDestroy();
     }
 
     private void startRound() {

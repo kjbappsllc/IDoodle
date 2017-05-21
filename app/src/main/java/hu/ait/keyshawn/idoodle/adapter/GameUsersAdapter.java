@@ -102,12 +102,6 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         userList.remove(index);
         notifyItemRemoved(index);
 
-        if(userList.isEmpty()){
-            userDb = FirebaseDatabase.getInstance().getReference();
-            userDb.child(constants.db_Games).
-                    child(getCurrentUser().getCurrentGameID()).removeValue();
-        }
-
         if(!getCurrentUser().getUid().equals(ID) && !getCurrentUser().getCurrentGameID().isEmpty()) {
             Toast.makeText(context, "" + username + " has left", Toast.LENGTH_SHORT).show();
         }
