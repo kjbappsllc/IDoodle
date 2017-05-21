@@ -455,6 +455,8 @@ public class GameActivity extends AppCompatActivity {
 
     private void startDrawingTimer() {
         Log.d("DEBUGGAME", "startedTimerDrawTimer");
+        stopIntermissionTimer();
+        intermissionTimer = null;
         if (drawingTimer == null) {
             drawingTimer = new CountDownTimer(40000, 1000) {
 
@@ -473,7 +475,7 @@ public class GameActivity extends AppCompatActivity {
                 public void onFinish() {
                     if (getCurrentUser().getUid().equals(currentGame.getHostUserID())) {
                         String[] available = splitCurrentWord();
-                        sendMessage("SYSTEM", "The correct word was: " + available[0]);
+                        sendGlobalMessage("SYSTEM", "Word was: " + available[0]);
                         String newGs = Gamestate.GameStateToString(Gamestate.endRoundPhase);
                         getCurrentGameReference().
                                 child(constants.db_Games_gameState).setValue(newGs);
@@ -497,7 +499,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void setUpNewRound() {
+        stopDrawingTimer();
         drawingTimer = null;
+        stopIntermissionTimer();
         intermissionTimer = null;
         if (currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
             getCurrentGameReference().
@@ -511,6 +515,8 @@ public class GameActivity extends AppCompatActivity {
 
     private void startIntermissionTimer() {
         Log.d("DEBUGGAME", "startedTimerIntTimer");
+        stopDrawingTimer();
+        drawingTimer = null;
         if (intermissionTimer == null) {
             intermissionTimer = new CountDownTimer(10000, 1000) {
                 @Override
