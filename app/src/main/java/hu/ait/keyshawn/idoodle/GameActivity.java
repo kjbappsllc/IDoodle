@@ -477,11 +477,15 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void stopDrawingTimer() {
-        drawingTimer.cancel();
+        if(drawingTimer != null) {
+            drawingTimer.cancel();
+        }
     }
 
     private void stopIntermissionTimer(){
-        intermissionTimer.cancel();
+        if(intermissionTimer != null) {
+            intermissionTimer.cancel();
+        }
     }
 
     public void setUpNewRound() {
