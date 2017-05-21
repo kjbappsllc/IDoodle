@@ -86,7 +86,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        if(getIntent().hasExtra(LobbyActivity.GAME_NAME)){
+        if (getIntent().hasExtra(LobbyActivity.GAME_NAME)) {
             String gmName = getIntent().getStringExtra(LobbyActivity.GAME_NAME);
             setTitle(gmName);
             currentGame = new Game(getCurrentUser().getCurrentGameID(), gmName);
@@ -96,10 +96,10 @@ public class GameActivity extends AppCompatActivity {
         firebaseGameHandler = new FirebaseGameHandler(this);
 
         initUI();
-        firebaseGameHandler.initGameHostIDEventListener(currentGame,gmUsersAdapter);
-        firebaseGameHandler.initGameUserListEventListener(currentGame,gmUsersAdapter,gameUserIDS);
-        firebaseGameHandler.initCurrentDrawerEventListener(currentGame,gmUsersAdapter);
-        firebaseGameHandler.initGameDrawingEventListener(currentGame,ivProjectedCanvas);
+        firebaseGameHandler.initGameHostIDEventListener(currentGame, gmUsersAdapter);
+        firebaseGameHandler.initGameUserListEventListener(currentGame, gmUsersAdapter, gameUserIDS);
+        firebaseGameHandler.initCurrentDrawerEventListener(currentGame, gmUsersAdapter);
+        firebaseGameHandler.initGameDrawingEventListener(currentGame, ivProjectedCanvas);
         firebaseGameHandler.initGameStateEventListener(currentGame);
         firebaseGameHandler.initRoundNumberEventListener(currentGame);
         firebaseGameHandler.initMessageEventListener(gmMessagesAdaper);
@@ -108,12 +108,18 @@ public class GameActivity extends AppCompatActivity {
 
 
     public User getCurrentUser() {
-        return ((MainApplication)getApplication()).getCurrentUser();
+        return ((MainApplication) getApplication()).getCurrentUser();
     }
-    public DatabaseReference getCurrentGameReference() {return mDatabase.child(constants.db_Games).
-            child(getCurrentUser().getCurrentGameID());}
-    public DatabaseReference getCurrentUserReference() {return mDatabase.child(constants.db_Users).
-            child(getCurrentUser().getUid());}
+
+    public DatabaseReference getCurrentGameReference() {
+        return mDatabase.child(constants.db_Games).
+                child(getCurrentUser().getCurrentGameID());
+    }
+
+    public DatabaseReference getCurrentUserReference() {
+        return mDatabase.child(constants.db_Users).
+                child(getCurrentUser().getUid());
+    }
 
 
     private void initUI() {
@@ -144,10 +150,10 @@ public class GameActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(!TextUtils.isEmpty(etGuess.getText().toString())) {
+                    if (!TextUtils.isEmpty(etGuess.getText().toString())) {
                         String sender = getCurrentUser().getUsername();
                         String message = etGuess.getText().toString();
-                        sendMessage(sender,message);
+                        sendMessage(sender, message);
                         etGuess.setText("");
                         handled = true;
                     }
@@ -172,22 +178,21 @@ public class GameActivity extends AppCompatActivity {
 
     private void sendMessage(String sender, String message) {
         boolean shouldSendSystem = false;
-        if(!TextUtils.isEmpty(etGuess.getText().toString())){
-            if(!currentGame.getCurrentWord().isEmpty()){
+        if (!TextUtils.isEmpty(etGuess.getText().toString())) {
+            if (!currentGame.getCurrentWord().isEmpty()) {
                 String[] available = splitCurrentWord();
-                for(String word : available){
-                    if(etGuess.getText().toString().toLowerCase().equals(word)){
+                for (String word : available) {
+                    if (etGuess.getText().toString().toLowerCase().equals(word)) {
                         sendSystemMessage("YOU GOT IT! The word was: " + available[0]);
                         addPlayerPoints();
                         shouldSendSystem = true;
                     }
                 }
             }
-            if(!shouldSendSystem) {
+            if (!shouldSendSystem) {
                 sendGlobalMessage(sender, message);
             }
-        }
-        else {
+        } else {
             etGuess.setError("Please Enter Text");
         }
     }
@@ -213,7 +218,7 @@ public class GameActivity extends AppCompatActivity {
                 Integer points = Integer.valueOf(parsedData[1]);
                 points += 1;
 
-                mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),points));
+                mutableData.setValue(getString(R.string.userInfo, getCurrentUser().getUsername(), points));
 
                 return Transaction.success(mutableData);
             }
@@ -225,7 +230,7 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    private void addDrawerPoints(){
+    private void addDrawerPoints() {
         getCurrentGameReference().
                 child(constants.db_Games_Userlist).
                 child(currentGame.getCurrentDrawer()).runTransaction(new Transaction.Handler() {
@@ -238,7 +243,7 @@ public class GameActivity extends AppCompatActivity {
                 points += 1;
 
 
-                mutableData.setValue(getString(R.string.userInfo,parsedData[0],points));
+                mutableData.setValue(getString(R.string.userInfo, parsedData[0], points));
 
                 return Transaction.success(mutableData);
             }
@@ -326,14 +331,12 @@ public class GameActivity extends AppCompatActivity {
                 String data = mutableData.getValue(String.class);
                 String[] parsedData = data.split(",");
 
-                if(currentGame.getRoundNumber() >= 5) {
-                    updatePointsInDB(Integer.valueOf(parsedData[1]));
+                updatePointsInDB(Integer.valueOf(parsedData[1]));
 
-                    ((MainApplication) getApplication()).
-                            addTotalPoints(Integer.valueOf(parsedData[1]));
-                }
+                ((MainApplication) getApplication()).
+                        addTotalPoints(Integer.valueOf(parsedData[1]));
 
-                mutableData.setValue(getString(R.string.userInfo,getCurrentUser().getUsername(),0));
+                mutableData.setValue(getString(R.string.userInfo, getCurrentUser().getUsername(), 0));
                 return Transaction.success(mutableData);
             }
 
@@ -350,10 +353,9 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 Integer current = mutableData.getValue(Integer.class);
-                if(current == null){
+                if (current == null) {
                     mutableData.setValue(1);
-                }
-                else {
+                } else {
                     mutableData.setValue(current + points);
                 }
                 return Transaction.success(mutableData);
@@ -373,20 +375,19 @@ public class GameActivity extends AppCompatActivity {
             public Transaction.Result doTransaction(MutableData mutableData) {
                 Integer currentValue = mutableData.getValue(Integer.class);
 
-                if(currentGame.getRoundNumber() >= 5) {
-                    if (currentValue == null) {
-                        mutableData.setValue(1);
-                    } else {
-                        mutableData.setValue(currentValue + 1);
-                        ((MainApplication) getApplication()).addGamePoints();
-                    }
+
+                if (currentValue == null) {
+                    mutableData.setValue(1);
+                } else {
+                    mutableData.setValue(currentValue + 1);
+                    ((MainApplication) getApplication()).addGamePoints();
                 }
                 return Transaction.success(mutableData);
             }
 
             @Override
             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                if(currentGame.getHostUserID().equals(getCurrentUser().getUid())){
+                if (currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
                     String newGS = Gamestate.GameStateToString(Gamestate.preGamePhase);
 
                     getCurrentGameReference().
@@ -408,7 +409,7 @@ public class GameActivity extends AppCompatActivity {
 
     public void doPreGamePhase() {
         Log.d("GAMEDEBUG", currentGame.getHostUserID() + " nothin");
-        if(currentGame.getHostUserID().equals(getCurrentUser().getUid())){
+        if (currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
             btnStart.setVisibility(View.VISIBLE);
             tvWaiting.setVisibility(View.GONE);
         } else {
@@ -424,7 +425,7 @@ public class GameActivity extends AppCompatActivity {
         tvWaiting.setVisibility(View.GONE);
         tvTimer.setVisibility(View.VISIBLE);
 
-        if(currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
+        if (currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
             getNewWord();
         }
 
@@ -436,7 +437,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void setUpCavnasUI() {
-        if(currentGame.getCurrentDrawer().equals(getCurrentUser().getUid())){
+        if (currentGame.getCurrentDrawer().equals(getCurrentUser().getUid())) {
             ivProjectedCanvas.setVisibility(View.GONE);
             dvMain.setVisibility(View.VISIBLE);
             fab.setVisibility(View.VISIBLE);
@@ -454,7 +455,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void startDrawingTimer() {
         Log.d("DEBUGGAME", "startedTimerDrawTimer");
-        if(drawingTimer == null) {
+        if (drawingTimer == null) {
             drawingTimer = new CountDownTimer(40000, 1000) {
 
                 @Override
@@ -484,13 +485,13 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void stopDrawingTimer() {
-        if(drawingTimer != null) {
+        if (drawingTimer != null) {
             drawingTimer.cancel();
         }
     }
 
-    private void stopIntermissionTimer(){
-        if(intermissionTimer != null) {
+    private void stopIntermissionTimer() {
+        if (intermissionTimer != null) {
             intermissionTimer.cancel();
         }
     }
@@ -498,7 +499,7 @@ public class GameActivity extends AppCompatActivity {
     public void setUpNewRound() {
         drawingTimer = null;
         intermissionTimer = null;
-        if(currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
+        if (currentGame.getHostUserID().equals(getCurrentUser().getUid())) {
             getCurrentGameReference().
                     child(constants.db_Games_roundNumber).setValue(currentGame.getRoundNumber() + 1);
         }
@@ -510,7 +511,7 @@ public class GameActivity extends AppCompatActivity {
 
     private void startIntermissionTimer() {
         Log.d("DEBUGGAME", "startedTimerIntTimer");
-        if(intermissionTimer == null) {
+        if (intermissionTimer == null) {
             intermissionTimer = new CountDownTimer(10000, 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -529,7 +530,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void clearUI() {
-        if(currentGame.getCurrentDrawer().equals(getCurrentUser().getUid())) {
+        if (currentGame.getCurrentDrawer().equals(getCurrentUser().getUid())) {
             dvMain.clearDrawing();
             Log.d("drawing", "Attempting to clear");
         }
@@ -557,7 +558,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void leaveGame() {
-        if(getCurrentUser().getUid().equals(currentGame.getHostUserID())){
+        if (getCurrentUser().getUid().equals(currentGame.getHostUserID())) {
             if (drawingTimer != null) {
                 stopDrawingTimer();
                 drawingTimer = null;
@@ -626,13 +627,12 @@ public class GameActivity extends AppCompatActivity {
     private void startRound() {
         String newGs = Gamestate.GameStateToString(Gamestate.drawingPhase);
         intermissionTimer = null;
-        if(gameUserIDS.size() >= 2){
+        if (gameUserIDS.size() >= 2) {
             getNewDrawer(newGs);
             btnStart.setVisibility(View.GONE);
             tvWaiting.setVisibility(View.GONE);
             tvTimer.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             newGs = Gamestate.GameStateToString(Gamestate.endGamePhase);
             getCurrentGameReference().
                     child(constants.db_Games_gameState).setValue(newGs);
@@ -641,11 +641,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void getNewDrawer(final String newGs) {
-       getCurrentGameReference().child(constants.db_Games_roundNumber).addListenerForSingleValueEvent(new ValueEventListener() {
+        getCurrentGameReference().child(constants.db_Games_roundNumber).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 int roundNumber = dataSnapshot.getValue(int.class);
-                int index = (roundNumber-1) % gameUserIDS.size();
+                int index = (roundNumber - 1) % gameUserIDS.size();
                 String nextUserID = gameUserIDS.get(index);
 
                 getCurrentGameReference().child(constants.db_Games_currentDrawer).setValue(nextUserID);
@@ -662,9 +662,9 @@ public class GameActivity extends AppCompatActivity {
     private void getNewWord() {
 
         Random randomGen = new Random();
-        int num = randomGen.nextInt(36)+1;
-        while (playedWords.contains(num)){
-            num = randomGen.nextInt(36)+1;
+        int num = randomGen.nextInt(36) + 1;
+        while (playedWords.contains(num)) {
+            num = randomGen.nextInt(36) + 1;
         }
 
         playedWords.add(num);
@@ -689,13 +689,17 @@ public class GameActivity extends AppCompatActivity {
         return currentGame.getCurrentWord().split(",");
     }
 
-    public void scrollMessageRecycler(int position){
+    public void scrollMessageRecycler(int position) {
         rvMessages.scrollToPosition(position);
     }
 
-    public void scrollUsersRecycler(){rvUsers.scrollToPosition(0);}
+    public void scrollUsersRecycler() {
+        rvUsers.scrollToPosition(0);
+    }
 
-    public void removeFromBackstack() {finish();}
+    public void removeFromBackstack() {
+        finish();
+    }
 
     @Override
     protected void onResume() {
