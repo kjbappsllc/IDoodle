@@ -570,6 +570,8 @@ public class GameActivity extends AppCompatActivity {
             currentUser.setCurrentGameID("");
             ((MainApplication) getApplication()).setCurrentUser(currentUser);
 
+            firebaseGameHandler.deinit();
+
         } else {
 
             if (drawingTimer != null) {

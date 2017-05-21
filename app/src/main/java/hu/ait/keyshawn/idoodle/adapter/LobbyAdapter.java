@@ -19,23 +19,19 @@ import hu.ait.keyshawn.idoodle.LobbyActivity;
 import hu.ait.keyshawn.idoodle.R;
 import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.Game;
-
-/**
- * Created by vickievictor on 5/15/17.
- */
+import hu.ait.keyshawn.idoodle.pager.FragmentLobbies;
 
 public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
 
     private List<Game> gameList;
     private List<String> gameIDs;
-    private Context context;
     private DatabaseReference mDatabase;
+    private Context context;
 
     public LobbyAdapter(Context context){
         this.context = context;
         gameIDs = new ArrayList<>();
         gameList = new ArrayList<>();
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
@@ -50,18 +46,27 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.tvGameName.setText(gameList.get(position).getGameName());
         holder.tvRound.setText(context.getString(R.string.RoundNumber, gameList.get(position).getRoundNumber()));
-        if (gameList.get(position).getUserList().size() == 0){
+        if (gameList.get(position).getUserList() == null){
             Log.d("gametest", "UserListEmpty");
 
+            if(gameList.get(position).getHostUserID().
+                    equals(((LobbyActivity)context).getCurrentUser().getUid())){
+                Log.d("gametest", "Host ID EMpty");
+                mDatabase.child(constants.db_Games).
+                        child(gameList.get(position).getUid()).
+                        removeValue();
+            }
         }
         else {
-            holder.tvUsers.setText(context.getString(R.string.UserNumber, gameList.get(position).getUserList().size()));
+            holder.tvUsers.setText(context.getString(R.string.UserNumber,
+                    gameList.get(holder.getAdapterPosition()).getUserList().size()));
         }
 
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((LobbyActivity)context).initJoinGameDB(gameList.get(position), holder.tvGameName.getText().toString());
+                ((LobbyActivity)context).initJoinGameDB(gameList.get(holder.getAdapterPosition()),
+                        holder.tvGameName.getText().toString());
             }
         });
     }
@@ -92,10 +97,6 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
 
     public void updateGame(String id, Game updated) {
         int index = gameIDs.indexOf(id);
-
-        if(updated.getUserList().size() == 0) {
-            Log.d("gameTest", "Game is Empty");
-        }
 
         if(index != -1) {
             gameList.set(index, updated);

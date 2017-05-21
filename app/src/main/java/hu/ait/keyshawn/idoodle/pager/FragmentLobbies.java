@@ -17,10 +17,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import hu.ait.keyshawn.idoodle.LobbyActivity;
+import hu.ait.keyshawn.idoodle.MainApplication;
 import hu.ait.keyshawn.idoodle.R;
 import hu.ait.keyshawn.idoodle.adapter.LobbyAdapter;
 import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.Game;
+import hu.ait.keyshawn.idoodle.data.User;
 
 /**
  * Created by vickievictor on 5/15/17.
@@ -79,4 +82,5 @@ public class FragmentLobbies extends Fragment {
 
         gamesRef.child(constants.db_Games).addChildEventListener(gameListener);
     }
+
 }

@@ -168,9 +168,8 @@ public class FirebaseGameHandler {
 
             if(!getCurrentUser().getUid().equals(uID)){
                 ((GameActivity) context).leaveGame();
+                ((GameActivity)context).removeFromBackstack();
             }
-
-            ((GameActivity)context).removeFromBackstack();
         }
         gmAdapter.removeUser(uID, userInfo);
     }

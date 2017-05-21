@@ -62,11 +62,11 @@ public class LobbyActivity extends AppCompatActivity {
 
     }
 
-    private User getCurrentUser() {
-        return ((MainApplication)getApplication()).getCurrentUser();
+    public User getCurrentUser() {
+        return ((MainApplication) getApplication()).getCurrentUser();
     }
 
-    public void showGameActivity(String gameName){
+    public void showGameActivity(String gameName) {
         Intent intent = new Intent(LobbyActivity.this,
                 GameActivity.class);
         intent.putExtra(GAME_NAME, gameName);
@@ -93,7 +93,7 @@ public class LobbyActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void showAddGameDialog(){
+    public void showAddGameDialog() {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle("Create New Game");
 
@@ -105,7 +105,7 @@ public class LobbyActivity extends AppCompatActivity {
         alertDialogBuilder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(TextUtils.isEmpty(etGameName.getText().toString())){
+                if (TextUtils.isEmpty(etGameName.getText().toString())) {
                     etGameName.setError("Please Enter Text");
                 } else {
                     initNewGameDB(etGameName.getText().toString());
@@ -122,42 +122,37 @@ public class LobbyActivity extends AppCompatActivity {
     }
 
     private void initNewGameDB(String gameName) {
-        Resources res = getResources();
+        User currentUser = getCurrentUser();
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         String gameKey = mDatabase.child(constants.db_Games).push().getKey();
 
         Game newGame = new Game(gameKey, gameName);
         newGame.setGameState(Gamestate.GameStateToString(Gamestate.preGamePhase));
+        newGame.getUserList().put(currentUser.getUid(),
+                getString(R.string.userInfo, getCurrentUser().getUsername(), 0));
+        newGame.setHostUserID(currentUser.getUid());
+
         EventBus.getDefault().post(newGame);
         mDatabase.child(constants.db_Games).child(gameKey).setValue(newGame);
 
-        User currentUser = getCurrentUser();
+        currentUser.setCurrentGameID(newGame.getUid());
+        mDatabase.child(constants.db_Users).child(currentUser.getUid()).
+                child(constants.db_Users_currentGameID).setValue(newGame.getUid());
 
-        if(currentUser != null) {
-            currentUser.setCurrentGameID(newGame.getUid());
-            mDatabase.child(constants.db_Users).child(currentUser.getUid()).
-                    child(constants.db_Users_currentGameID).setValue(newGame.getUid());
-            mDatabase.child(constants.db_Games).child(currentUser.getCurrentGameID()).child(constants.db_Games_hostID).setValue(currentUser.getUid());
-            mDatabase.child(constants.db_Games).
-                    child(gameKey).
-                    child(constants.db_Games_Userlist).
-                    child(currentUser.getUid()).
-                    setValue(res.getString(R.string.userInfo, getCurrentUser().getUsername(), 0));
-
-            showGameActivity(newGame.getGameName());
-        }
+        showGameActivity(newGame.getGameName());
     }
 
     public void initJoinGameDB(Game newGame, String gameName) {
+        User currentUser = getCurrentUser();
         Resources res = getResources();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         EventBus.getDefault().post(newGame);
-        User currentUser = getCurrentUser();
 
-        if(currentUser != null) {
+        if (currentUser != null) {
             currentUser.setCurrentGameID(newGame.getUid());
             mDatabase.child(constants.db_Users).child(currentUser.getUid()).
-            child(constants.db_Users_currentGameID).setValue(newGame.getUid());
+                    child(constants.db_Users_currentGameID).setValue(newGame.getUid());
 
             mDatabase.child(constants.db_Games).
                     child(newGame.getUid()).child(constants.db_Games_Userlist).
