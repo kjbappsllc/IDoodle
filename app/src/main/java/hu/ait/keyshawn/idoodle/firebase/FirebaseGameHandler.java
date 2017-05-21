@@ -3,6 +3,7 @@ package hu.ait.keyshawn.idoodle.firebase;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -153,11 +154,15 @@ public class FirebaseGameHandler {
                                    List<String> gameUserIDS,
                                    Game game,
                                    GameUsersAdapter gmAdapter) {
+
         String uID = dataSnapshot.getKey();
         String userInfo = dataSnapshot.getValue(String.class);
 
         int index = gameUserIDS.indexOf(uID);
         gameUserIDS.remove(index);
+
+        Log.d("greattest", uID);
+        Log.d("greattest", game.getHostUserID());
 
         if(uID.equals(game.getHostUserID())) {
             Toast.makeText(context, "HOST HAS LEFT THE GAME", Toast.LENGTH_LONG).show();

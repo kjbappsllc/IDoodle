@@ -557,15 +557,14 @@ public class GameActivity extends AppCompatActivity {
     public void leaveGame() {
         if(getCurrentUser().getUid().equals(currentGame.getHostUserID())){
             Log.d("greattest", "Is Host User");
-            getCurrentGameReference().removeValue();
-
-            mDatabase.child(constants.db_Users).
-                    child(getCurrentUser().getUid()).
-                    child("currentGameID").setValue("");
 
             getCurrentGameReference().
                     child(constants.db_Games_Userlist).
                     child(getCurrentUser().getUid()).removeValue();
+
+            mDatabase.child(constants.db_Users).
+                    child(getCurrentUser().getUid()).
+                    child("currentGameID").setValue("");
 
             User currentUser = getCurrentUser();
             currentUser.setCurrentGameID("");
