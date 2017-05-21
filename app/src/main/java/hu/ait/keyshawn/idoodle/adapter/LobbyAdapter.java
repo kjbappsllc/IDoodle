@@ -3,16 +3,21 @@ package hu.ait.keyshawn.idoodle.adapter;
 import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import hu.ait.keyshawn.idoodle.LobbyActivity;
 import hu.ait.keyshawn.idoodle.R;
+import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.Game;
 
 /**
@@ -24,11 +29,14 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
     private List<Game> gameList;
     private List<String> gameIDs;
     private Context context;
+    private DatabaseReference mDatabase;
 
     public LobbyAdapter(Context context){
         this.context = context;
         gameIDs = new ArrayList<>();
         gameList = new ArrayList<>();
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
     @Override
@@ -43,7 +51,11 @@ public class LobbyAdapter extends RecyclerView.Adapter<LobbyAdapter.ViewHolder>{
         holder.tvGameName.setText(gameList.get(position).getGameName());
         holder.tvRound.setText(context.getString(R.string.RoundNumber, gameList.get(position).getRoundNumber()));
         if (gameList.get(position).getUserList() == null){
-            System.out.println("user list is null");
+            Log.d("gametest", "UserListEmpty");
+            String gameToRemove = gameList.get(position).getUid();
+
+            mDatabase.child(constants.db_Games).child(gameToRemove).removeValue();
+
         }
         else {
             holder.tvUsers.setText(context.getString(R.string.UserNumber, gameList.get(position).getUserList().size()));
