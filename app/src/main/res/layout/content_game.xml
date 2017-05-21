@@ -13,7 +13,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#9d9fff">
+        android:background="@color/colorPrimary">
 
         <TextView
             android:id="@+id/tvTimer"
@@ -32,10 +32,10 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="40dp"
-            android:background="#ffc022"
+            android:background="@color/colorComplement"
             android:padding="3dp"
             android:text="@string/loading"
-            android:textColor="#000000"
+            android:textColor="@color/colorAccent"
             android:textSize="25sp"
             android:visibility="gone" />
 
@@ -66,7 +66,7 @@
             android:layout_height="145dp"
             android:layout_alignParentTop="true"
             android:layout_centerVertical="true"
-            app:cardBackgroundColor="#abadff"
+            app:cardBackgroundColor="@color/colorPrimary"
             app:cardElevation="2dp">
 
             <android.support.v7.widget.RecyclerView

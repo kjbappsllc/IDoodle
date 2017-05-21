@@ -17,10 +17,10 @@
 
         <com.kekstudio.dachshundtablayout.DachshundTabLayout
             android:id="@+id/tab_layout"
-            app:ddIndicatorColor="#0084ff"
+            app:ddIndicatorColor="@color/colorComplement"
             app:tabSelectedTextColor="#FFF"
-            app:tabTextColor="#383838"
-            app:tabIndicatorColor="#0800a6"
+            app:tabTextColor="@color/colorPrimaryDark"
+            app:tabIndicatorColor="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

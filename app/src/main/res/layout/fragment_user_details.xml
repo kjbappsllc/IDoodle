@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:background="#9395ff"
+    android:background="@color/colorPrimary"
     android:orientation="vertical"
     android:paddingTop="25dp">
 
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:paddingBottom="15dp"
         android:paddingTop="10dp"
-        android:textColor="#FFF"
+        android:textColor="@color/colorComplement"
         android:textStyle="bold|italic"
         android:text="@string/username_goes_here"
         android:textSize="35sp" />
