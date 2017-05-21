@@ -89,7 +89,8 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         this.userList.add(0,userInfo);
         notifyItemInserted(0);
 
-        if(!getCurrentUser().getUid().equals(ID)) {
+        if(!getCurrentUser().getUid().equals(ID) &&
+                !getCurrentUser().getCurrentGameID().isEmpty()) {
             Toast.makeText(context, "" + username + " has entered", Toast.LENGTH_SHORT).show();
         }
     }
@@ -102,7 +103,8 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         userList.remove(index);
         notifyItemRemoved(index);
 
-        if(!getCurrentUser().getUid().equals(ID) && !getCurrentUser().getCurrentGameID().isEmpty()) {
+        if(!getCurrentUser().getUid().equals(ID) &&
+                !getCurrentUser().getCurrentGameID().isEmpty()) {
             Toast.makeText(context, "" + username + " has left", Toast.LENGTH_SHORT).show();
         }
     }
@@ -112,6 +114,7 @@ public class GameUsersAdapter extends RecyclerView.Adapter<GameUsersAdapter.View
         userList.set(index,userInfo);
         notifyItemChanged(index);
     }
+
 
     @Override
     public int getItemCount() {

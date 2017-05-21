@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class FragmentLobbies extends Fragment {
     private LobbyAdapter lobbyAdapter;
     private RecyclerView lobbyRecycler;
     private DatabaseReference gamesRef;
+    private ChildEventListener gameListener;
 
     @Nullable
     @Override
@@ -45,43 +47,36 @@ public class FragmentLobbies extends Fragment {
         lobbyRecycler.setLayoutManager(layoutManager);
         lobbyAdapter = new LobbyAdapter(getContext());
         lobbyRecycler.setAdapter(lobbyAdapter);
-
         initGamesListener();
-
         return rootView;
     }
 
     public void initGamesListener() {
         gamesRef = FirebaseDatabase.getInstance().getReference();
-        gamesRef.child(constants.db_Games).addChildEventListener(new ChildEventListener() {
+
+        gameListener = new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Game newGame = dataSnapshot.getValue(Game.class);
                 lobbyAdapter.addGame(newGame);
                 lobbyRecycler.scrollToPosition(0);
             }
-
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 Game updatedGame = dataSnapshot.getValue(Game.class);
                 lobbyAdapter.updateGame(updatedGame.getUid(), updatedGame);
             }
-
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 Game removedGame = dataSnapshot.getValue(Game.class);
                 lobbyAdapter.removeGame(removedGame.getUid());
             }
-
             @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
             @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {}
+        };
 
-            }
-        });
+        gamesRef.child(constants.db_Games).addChildEventListener(gameListener);
     }
 }
