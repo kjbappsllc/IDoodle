@@ -474,8 +474,6 @@ public class GameActivity extends AppCompatActivity {
                 @Override
                 public void onFinish() {
                     if (getCurrentUser().getUid().equals(currentGame.getHostUserID())) {
-                        String[] available = splitCurrentWord();
-                        sendGlobalMessage("SYSTEM", "Word was: " + available[0]);
                         String newGs = Gamestate.GameStateToString(Gamestate.endRoundPhase);
                         getCurrentGameReference().
                                 child(constants.db_Games_gameState).setValue(newGs);
@@ -517,6 +515,8 @@ public class GameActivity extends AppCompatActivity {
         Log.d("DEBUGGAME", "startedTimerIntTimer");
         stopDrawingTimer();
         drawingTimer = null;
+        String[] available = splitCurrentWord();
+        sendGlobalMessage("SYSTEM", "Word was: " + available[0]);
         if (intermissionTimer == null) {
             intermissionTimer = new CountDownTimer(10000, 1000) {
                 @Override
