@@ -41,7 +41,7 @@
 
     </RelativeLayout>
 
-    <hu.ait.keyshawn.idoodle.View.DrawingView
+    <hu.ait.keyshawn.idoodle.view.DrawingView
         android:id="@+id/dvMainCanvas"
         android:layout_width="match_parent"
         android:layout_height="0dp"

@@ -48,4 +48,5 @@
     <string name="guess">Guess</string>
     <string name="start_game">Start Game</string>
     <string name="waiting_for_host">Waiting for Host</string>
+    <string name="new_game">New Game</string>
 </resources>

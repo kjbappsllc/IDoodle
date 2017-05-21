@@ -1,4 +1,4 @@
-package hu.ait.keyshawn.idoodle.View;
+package hu.ait.keyshawn.idoodle.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,19 +14,15 @@ import android.view.View;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.ByteArrayOutputStream;
 
 import hu.ait.keyshawn.idoodle.GameActivity;
-import hu.ait.keyshawn.idoodle.MainApplication;
 import hu.ait.keyshawn.idoodle.constants.constants;
 import hu.ait.keyshawn.idoodle.data.Gamestate;
 import hu.ait.keyshawn.idoodle.data.User;
@@ -97,12 +93,9 @@ public class DrawingView extends View {
     public void clearDrawing()
     {
         setDrawingCacheEnabled(false);
-
         onSizeChanged(width, height, width, height);
         invalidate();
-
         clearImageInDB();
-
         setDrawingCacheEnabled(true);
     }
 
@@ -137,12 +130,16 @@ public class DrawingView extends View {
         mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] byteArray = stream.toByteArray();
 
+        uploadImageToDB(currentUser, imagesRef, byteArray);
+
+    }
+
+    public void uploadImageToDB(final User currentUser, StorageReference imagesRef, byte[] byteArray) {
         UploadTask uploadTask = imagesRef.putBytes(byteArray);
 
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
@@ -156,7 +153,6 @@ public class DrawingView extends View {
                 }
             }
         });
-
     }
 
     @Override
@@ -192,7 +188,8 @@ public class DrawingView extends View {
     }
 
     private void touch_up() {
-        if(((GameActivity)context).gameState.equals(Gamestate.GameStateToString(Gamestate.drawingPhase))) {
+        if(((GameActivity)context).currentGame.getGameState().
+                equals(Gamestate.GameStateToString(Gamestate.drawingPhase))) {
             mPath.lineTo(mX, mY);
             circlePath.reset();
             mCanvas.drawPath(mPath, mPaint);

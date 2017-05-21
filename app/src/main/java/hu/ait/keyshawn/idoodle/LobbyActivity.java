@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.kekstudio.dachshundtablayout.DachshundTabLayout;
@@ -33,18 +35,15 @@ import hu.ait.keyshawn.idoodle.pager.FragmentPager;
 public class LobbyActivity extends AppCompatActivity {
 
     public static final String GAME_NAME = "GAME_NAME";
-    private LobbyAdapter lobbyAdapter;
-    private RecyclerView lobbyRecycler;
-    private TextView tvUsername;
-    private TextView tvGamesPlayed;
-    private TextView tvTotalPoints;
-
     private DatabaseReference mDatabase;
+    FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
+
+        firebaseAuth = FirebaseAuth.getInstance();
 
         DachshundTabLayout tabLayout = (DachshundTabLayout) findViewById(R.id.tab_layout);
 
@@ -162,5 +161,11 @@ public class LobbyActivity extends AppCompatActivity {
 
             showGameActivity(gameName);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        firebaseAuth.signOut();
+        super.onBackPressed();
     }
 }

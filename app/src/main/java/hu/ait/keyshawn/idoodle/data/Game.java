@@ -37,8 +37,8 @@ public class Game {
         return val.toString();
     }
 
-    public Gamestate getGameState() {
-        return Gamestate.valueOf(gameState);
+    public String getGameState() {
+        return this.gameState;
     }
 
     public String getDrawingUrl() {
@@ -111,6 +111,10 @@ public class Game {
 
     public void setCurrentWord(String currentWord) {
         this.currentWord = currentWord;
+    }
+
+    public void setGameState(String gameState) {
+        this.gameState = gameState;
     }
 }
 
